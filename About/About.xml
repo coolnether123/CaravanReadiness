@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>Caravan Readiness</name>
+  <author>CoolNether123</author>
+  <packageId>CoolNether123.CaravanReadiness</packageId>
+  <supportedVersions>
+    <li>1.6</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+    </li>
+    <li>
+      <packageId>CoolNether123.Spine</packageId>
+      <displayName>Spine</displayName>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>brrainz.harmony</li>
+    <li>CoolNether123.Spine</li>
+  </loadAfter>
+  <description>Caravan Readiness adds a live readiness report to the caravan hitching spot used by a forming vanilla caravan.
+
+See requested, loaded, carried, reserved, waiting, inaccessible, blocked, and unavailable cargo quantities. Review people, animals, and concrete departure blockers, then click a row to jump to the relevant pawn or item.
+
+The mod does not create a second staging system, change caravan jobs, or force departure. It observes the existing vanilla formation process and updates on a bounded cadence.</description>
+</ModMetaData>

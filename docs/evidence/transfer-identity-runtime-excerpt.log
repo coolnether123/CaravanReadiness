@@ -1,0 +1,16 @@
+Session: CaravanReadiness-c3a9a6e473aa4f16acbaa95c2ec69fb6
+Purpose: duplicate transfer-group identity and minified display save/load regression
+Raw Player.log bytes: 26665
+Raw Player.log SHA-256: 89341B9DB05167A38094F29DB23C2BF24BB09FB9F12F7D59B401C9F243D533A3
+
+[RimWorld Agent] active-mods: packageId=Ludeon.RimWorld name=Core packageId=brrainz.harmony name=Harmony packageId=Coolnether123.RimWorldAgent name=RimWorld Agent packageId=CoolNether123.Spine name=Spine packageId=CoolNether123.CaravanReadiness name=Caravan Readiness
+[Caravan Readiness] verificationTransferIdentity=staged duplicateDef=MealSimple survivorRequested=3 minifiedDisplay=Shelf
+[Caravan Readiness] verificationTransferIdentity=load-complete duplicateDefHistory=preserved minifiedRefresh=preserved
+[Caravan Readiness] verificationSnapshot=complete stage=cargoWindowOpened lord=0 phase="Gathering animals" cargoRows=7 people=2 animals=0 problems=0 cargo="Cloth=0/10;MedicineIndustrial=0/8;Silver=0/15;MealSimple=0/3;Steel=0/40;Shelf=0/1;WoodLog=0/20"
+[RimWorld Agent] harmony-summary: patchedMethods=9 prefixes=3 postfixes=7 transpilers=0 finalizers=1 owners: Coolnether123.RimWorldAgent.RootUpdate=3 CoolNether123.Spine.StableTooltipSizing=3 net.pardeike.rimworld.lib.harmony=3 CoolNether123.CaravanReadiness=2
+
+Error matches: 0
+Exception matches: 0
+Lane stop status: released
+Forced termination: false
+Harness runtime cleanup warning after process exit: Access to the path 'RimWorldWin64.exe' is denied.

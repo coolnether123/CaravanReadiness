@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <CR_CommandLabel>Caravan readiness</CR_CommandLabel>
+  <CR_CommandDescription>Review the cargo, members, animals, and problems for the caravan forming at this hitching spot.</CR_CommandDescription>
+  <CR_WindowTitle>Caravan readiness</CR_WindowTitle>
+  <CR_FormationLabel>Caravan {0}</CR_FormationLabel>
+  <CR_SelectFormation>Select caravan</CR_SelectFormation>
+  <CR_SelectFormationTooltip>Several caravans use this hitching spot. Choose one manifest; they are never merged.</CR_SelectFormationTooltip>
+  <CR_PhaseSummary>Current phase: {0}</CR_PhaseSummary>
+  <CR_ProgressSummary>{0} / {1} loaded  -  {2} being carried  -  {3} reserved</CR_ProgressSummary>
+  <CR_EmptyFormation>No caravan is currently forming at this hitching spot.</CR_EmptyFormation>
+  <CR_TabCargo>Cargo</CR_TabCargo>
+  <CR_TabPeople>People</CR_TabPeople>
+  <CR_TabAnimals>Animals</CR_TabAnimals>
+  <CR_TabProblems>Problems ({0})</CR_TabProblems>
+  <CR_SearchHint>Search this view...</CR_SearchHint>
+  <CR_ColumnItem>Item</CR_ColumnItem>
+  <CR_ColumnLoaded>Loaded / requested</CR_ColumnLoaded>
+  <CR_ColumnLoadedCompact>Loaded / goal</CR_ColumnLoadedCompact>
+  <CR_ColumnCarried>Carried</CR_ColumnCarried>
+  <CR_ColumnReserved>Reserved</CR_ColumnReserved>
+  <CR_ColumnWaiting>Waiting</CR_ColumnWaiting>
+  <CR_ColumnProblems>Problems</CR_ColumnProblems>
+  <CR_NoSearchResults>No matching rows.</CR_NoSearchResults>
+  <CR_AllReady>No known blockers. Vanilla will depart when its remaining formation steps finish.</CR_AllReady>
+  <CR_CargoTooltip>Requested: {0}
+Loaded: {1}
+Being carried: {2}
+Reserved for loading: {3}
+Waiting to be hauled: {4}
+Unavailable: {5}
+Inaccessible: {6}
+Reserved or blocked: {7}
+
+Click to jump to a relevant item or pawn.</CR_CargoTooltip>
+  <CR_CargoFlagBurning>Burning: yes</CR_CargoFlagBurning>
+  <CR_CargoFlagForbidden>Forbidden: yes (informational)</CR_CargoFlagForbidden>
+  <CR_ProblemUnavailable>{0}: unavailable</CR_ProblemUnavailable>
+  <CR_ProblemUnavailableDetail>{0} requested unit(s) have no currently usable source.</CR_ProblemUnavailableDetail>
+  <CR_ProblemInaccessible>{0}: inaccessible</CR_ProblemInaccessible>
+  <CR_ProblemInaccessibleDetail>{0} requested unit(s) cannot be reached by an available colonist.</CR_ProblemInaccessibleDetail>
+  <CR_ProblemReserved>{0}: reserved or blocked</CR_ProblemReserved>
+  <CR_ProblemReservedDetail>{0} requested unit(s) are reserved by unrelated work.</CR_ProblemReservedDetail>
+  <CR_ProblemBurning>{0}: burning</CR_ProblemBurning>
+  <CR_ProblemBurningDetail>A candidate stack is on fire and may be lost before it is loaded.</CR_ProblemBurningDetail>
+  <CR_ProblemForbidden>{0}: forbidden</CR_ProblemForbidden>
+  <CR_ProblemForbiddenDetail>A candidate stack is forbidden. Vanilla caravan gathering may override forbidding; this is informational.</CR_ProblemForbiddenDetail>
+  <CR_ProblemCapacity>Insufficient carrying capacity</CR_ProblemCapacity>
+  <CR_ProblemCapacityDetail>The manifest exceeds current capacity by {0}.</CR_ProblemCapacityDetail>
+  <CR_MemberDowned>Downed</CR_MemberDowned>
+  <CR_MemberDownedDetail>This caravan member is downed and must be carried through the vanilla formation process.</CR_MemberDownedDetail>
+  <CR_MemberMentalBreak>Mental break</CR_MemberMentalBreak>
+  <CR_MemberMentalBreakDetail>Vanilla caravan formation is paused while this member is in a mental state.</CR_MemberMentalBreakDetail>
+  <CR_MemberUnavailable>Unavailable</CR_MemberUnavailable>
+  <CR_MemberUnavailableDetail>This member is not currently spawned on the formation map.</CR_MemberUnavailableDetail>
+  <CR_MemberNoPath>No path</CR_MemberNoPath>
+  <CR_MemberNoPathDetail>This member cannot reach the current gathering or exit point.</CR_MemberNoPathDetail>
+  <CR_MemberApproaching>Approaching</CR_MemberApproaching>
+  <CR_MemberApproachingDetail>This member has not yet reached the current gathering or exit area.</CR_MemberApproachingDetail>
+  <CR_MemberWaitingRope>Waiting to be roped</CR_MemberWaitingRope>
+  <CR_MemberWaitingRopeDetail>This pen animal has not yet been roped for caravan formation.</CR_MemberWaitingRopeDetail>
+  <CR_MemberReady>At point</CR_MemberReady>
+  <CR_MemberReadyDetail>This member is near the current gathering or exit point and has no known blocker.</CR_MemberReadyDetail>
+</LanguageData>

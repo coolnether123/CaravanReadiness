@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+.vs/
+*.suo
+*.user
+AGENTS.md
+Engineering/artifacts/
+1.6/Assemblies/*.pdb

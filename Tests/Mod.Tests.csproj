@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>CaravanReadiness.Tests</AssemblyName>
+    <RootNamespace>CaravanReadiness.Tests</RootNamespace>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Source\Domain\CargoCountLedger.cs"
+             Link="CargoCountLedger.cs" />
+    <Compile Include="..\Source\Domain\FormationOrdering.cs"
+             Link="FormationOrdering.cs" />
+    <Compile Include="..\Source\Domain\ManifestRequestTracker.cs"
+             Link="ManifestRequestTracker.cs" />
+    <Compile Include="..\Source\Domain\ManifestSlotReconciler.cs"
+             Link="ManifestSlotReconciler.cs" />
+    <Compile Include="..\Source\Domain\StackQuantityAllocator.cs"
+             Link="StackQuantityAllocator.cs" />
+  </ItemGroup>
+</Project>

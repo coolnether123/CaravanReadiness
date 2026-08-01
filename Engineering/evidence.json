@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 2,
+  "packageId": "CoolNether123.CaravanReadiness",
+  "rimWorld": {
+    "version": "1.6.4871 rev574",
+    "versionManifestSha256": "0174C74429A3B1D9B272002A055FDBBC6645A0BF24A085E8BF39FDD3407B505B",
+    "gameAssemblySha256": "4A170804FBFEFABDB620D8914E584E58F822A58C6E304DCB76A67003588DAB28"
+  },
+  "source": {
+    "commit": null,
+    "state": "initial independently versioned repository; commit boundary held by parent",
+    "fileCount": 28,
+    "treeHashAlgorithm": "SHA-256 of UTF-8 lines relative-path<TAB>file-sha256, sorted ordinal, LF joined; inputs are .gitignore, README.md, LICENSE, and files under Source, Tests, About, Languages, and Patches excluding bin/obj",
+    "sourceTreeSha256": "695AA3A223EF4FBFC58A5344E1DD5C54450DEF03E22A64173EFF74FDD1CAB002"
+  },
+  "build": {
+    "configuration": "Release",
+    "toolingCommit": "293ced86bd3f42bef9501497d6deded81299c75c",
+    "toolingDirty": true,
+    "harmonySha256": "7B9E756306FA3D7620E02A857C8927A6AB04973F9BD8A77D3866700A6DEAC55C",
+    "spineSha256": "CDEB1F284C3C7555E11CACF0E735A1EED4D7AA634EABBE444F20E9B4D9D5CC57",
+    "buildStdoutSha256": "464EB3BAD16C255830AF9D704C3002E0E932A1B1D8D10E881DDCC9E87B996394",
+    "buildStderrSha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+    "modAssemblyBytes": 74752,
+    "modAssemblySha256": "57AFF93311D7F48CF2B81F0F8A02AB66D625E89E380EB15DCD4635E8D9D377D7"
+  },
+  "runtime": {
+    "activeMods": [
+      "Ludeon.RimWorld",
+      "brrainz.harmony",
+      "Coolnether123.RimWorldAgent",
+      "CoolNether123.Spine",
+      "CoolNether123.CaravanReadiness"
+    ],
+    "harmony": {
+      "patchedMethods": 2,
+      "prefixes": 1,
+      "postfixes": 1,
+      "transpilers": 0,
+      "finalizers": 0
+    },
+    "sessions": [
+      {
+        "id": "CaravanReadiness-2ec63e61f6f84074b771ff364c5524e5",
+        "purpose": "reservation quantity, manifest identity, save/reload, and performance review fixes",
+        "rawPlayerLogBytes": 34220,
+        "rawPlayerLogSha256": "CFEA08EF397D52AA6CB2F94F1E3B6F3328CADCB2FD176753F8289B069F0C500D",
+        "portableExcerpt": "docs/evidence/review-fix-runtime-excerpt.log",
+        "portableExcerptSha256": "1AE5C8F67139ED8158A1A2CFE821DB572377882B9F6E65979DF4DD960DD9429D"
+      },
+      {
+        "id": "CaravanReadiness-d7251edb742e46d087e2bbe64c7bd52f",
+        "purpose": "final assembly narrow-window and rightmost-gizmo evidence",
+        "rawPlayerLogBytes": 24190,
+        "rawPlayerLogSha256": "A3BEA952DAE3975066E10658DB25A401BAE498E8837AA8650AECB2A95F68A1C9",
+        "portableExcerpt": "docs/evidence/final-ui-runtime-excerpt.log",
+        "portableExcerptSha256": "D840AB66B8E73FD328F9F321DC9926F169B283BF511A9DFBB5B46E8384F31658"
+      },
+      {
+        "id": "CaravanReadiness-c3a9a6e473aa4f16acbaa95c2ec69fb6",
+        "purpose": "duplicate transfer-group and minified display refresh/save-load regression",
+        "rawPlayerLogBytes": 26665,
+        "rawPlayerLogSha256": "89341B9DB05167A38094F29DB23C2BF24BB09FB9F12F7D59B401C9F243D533A3",
+        "portableExcerpt": "docs/evidence/transfer-identity-runtime-excerpt.log",
+        "portableExcerptSha256": "4026C1F6205F568901756785D393B939CF2F7F28401B703D0B1BFBBCB10B04F5",
+        "released": true,
+        "forcedTermination": false,
+        "runtimeCleanupWarning": "Access to the path 'RimWorldWin64.exe' is denied."
+      }
+    ],
+    "errorMatches": 0,
+    "exceptionMatches": 0,
+    "knownExternalWarnings": [
+      "Local Spine dependency has no published download URL",
+      "RimWorld Agent ConnectedOutlineDrawer StaticConstructorOnStartup warning"
+    ]
+  },
+  "screenshots": [
+    {
+      "path": "docs/screenshots/gizmo-rightmost-final.png",
+      "sha256": "5BD668E7216A5F17C1647FE13B3CC2A23FCFFB87000D34B70DCF6E2BDEB86B0F"
+    },
+    {
+      "path": "docs/screenshots/narrow-window-final.png",
+      "sha256": "74C64B3E037D5B113A8112AA2A8CD88C8C8597C1342DE17674252A444078B92A"
+    },
+    {
+      "path": "docs/screenshots/transfer-identity-final.png",
+      "sha256": "5012EE5B0B1FBAA93CE330EF25B7F512264C3C31D7803984758B4771F8160401"
+    }
+  ],
+  "release": {
+    "validatorCode": "RWT-BUILD-PACKAGE-VALID",
+    "localStagingLabel": "release-20260801-final5",
+    "allowlist": [
+      {
+        "path": "1.6/Assemblies/CaravanReadiness.dll",
+        "bytes": 74752,
+        "sha256": "57AFF93311D7F48CF2B81F0F8A02AB66D625E89E380EB15DCD4635E8D9D377D7"
+      },
+      {
+        "path": "About/About.xml",
+        "bytes": 1217,
+        "sha256": "B5C82EF1BB4DBD9E47F31538B207B8F4BDB81116D45603B67A0E8B3E94767D0E"
+      },
+      {
+        "path": "About/Preview.png",
+        "bytes": 1669393,
+        "sha256": "4581A9D42DA98404F46F1B8837B0C7466D74607DE0B34DF157E966CBC276C7C6"
+      },
+      {
+        "path": "Languages/English/Keyed/CaravanReadiness.xml",
+        "bytes": 4330,
+        "sha256": "3042D18EC1BF0F340BE26B1E2338C9FD5D5B43FC087796B5252EDFBD56F49D86"
+      },
+      {
+        "path": "LICENSE",
+        "bytes": 1070,
+        "sha256": "7942115C67A258A6F955EF971F48E7A04C8A1CDCEC8F862CED392F93DA44F05A"
+      },
+      {
+        "path": "Patches/CaravanPackingSpot.xml",
+        "bytes": 279,
+        "sha256": "D4329904BA04359711614F23EDE8251005925FAF9117D3D9CC19A3D5DF212AA3"
+      },
+      {
+        "path": "README.md",
+        "bytes": 2822,
+        "sha256": "3504048E53478AE1963841EB4B97B449971D18D82A175BDACB1639B908F4665F"
+      }
+    ]
+  }
+}

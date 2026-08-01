@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "toolingRepository": "RimWorld-Tooling",
+  "resolver": "Resolve-RwtEnvironment",
+  "purpose": "Compile",
+  "rimWorldVersion": "1.6",
+  "project": "Source/Mod.csproj",
+  "configuration": "Release",
+  "assemblyName": "CaravanReadiness",
+  "packageId": "coolnether123.caravanreadiness"
+}
