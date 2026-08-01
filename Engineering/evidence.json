@@ -7,8 +7,8 @@
     "gameAssemblySha256": "4A170804FBFEFABDB620D8914E584E58F822A58C6E304DCB76A67003588DAB28"
   },
   "source": {
-    "commit": null,
-    "state": "initial independently versioned repository; commit boundary held by parent",
+    "commit": "87afef5b252ef6d8896889df4eae23c6c6bfb418",
+    "state": "committed",
     "fileCount": 28,
     "treeHashAlgorithm": "SHA-256 of UTF-8 lines relative-path<TAB>file-sha256, sorted ordinal, LF joined; inputs are .gitignore, README.md, LICENSE, and files under Source, Tests, About, Languages, and Patches excluding bin/obj",
     "sourceTreeSha256": "695AA3A223EF4FBFC58A5344E1DD5C54450DEF03E22A64173EFF74FDD1CAB002"
