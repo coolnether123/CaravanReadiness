@@ -2,43 +2,41 @@ using System;
 using System.Collections.Generic;
 using CaravanReadiness.Domain;
 using CaravanReadiness.UI;
+using static RimWorld.ModTestSupport.Test;
 
 namespace CaravanReadiness.Tests
 {
     internal static class Program
     {
-        private static int assertions;
-
         private static int Main()
         {
-            LoadedAndRemainingAreStable();
-            InFlightCountsAreSubsetsOfRemaining();
-            ProblemBucketsAreCappedWithoutOverlap();
-            MissingSourcesBecomeUnavailable();
-            LoadedTransitionRetainsOriginalRequest();
-            ReducedManifestDoesNotCreatePhantomLoadedCargo();
-            DroppedLoadedCargoReducesEffectiveRequest();
-            FormationOrderIsIndependentOfEnumerationOrder();
-            PartialReservationLeavesWaitingRemainder();
-            MultipleReservationsShareOneStackWithoutOverlap();
-            ReservationAllocationCapsAtStackSize();
-            ManifestSlotsFollowDefinitionsAcrossReorder();
-            ManifestSlotsHandleStructuralAddAndRemove();
-            DuplicateDefinitionsFollowTransferGroupIdentity();
-            MinifiedIdentitySurvivesRefreshAndLoad();
-            WideCargoLayoutKeepsEveryColumn();
-            NarrowCargoLayoutCollapsesLeastDiagnosticColumns();
-            CargoLabelNeverCollapsesBelowZero();
-            MemberLayoutDropsDetailBeforeName();
-            SparseContentProducesCompactWindow();
-            DenseContentStopsAtTheWindowCeiling();
-            SmallScreensNeverExceedTheirBounds();
-            EmptyListStillReservesItsPlaceholder();
-            ProgressValuesClampAtEveryBoundary();
-            ProgressLabelOutlineFitsInsideTheBar();
-
-            Console.WriteLine($"PASS: {assertions} Caravan Readiness assertions");
-            return 0;
+            Start("Caravan Readiness contracts");
+            Run("loaded and remaining are stable", LoadedAndRemainingAreStable);
+            Run("in-flight buckets reconcile", InFlightCountsAreSubsetsOfRemaining);
+            Run("problem buckets do not overlap", ProblemBucketsAreCappedWithoutOverlap);
+            Run("missing sources are unavailable", MissingSourcesBecomeUnavailable);
+            Run("loaded transition retains request", LoadedTransitionRetainsOriginalRequest);
+            Run("reduced manifest has no phantom cargo", ReducedManifestDoesNotCreatePhantomLoadedCargo);
+            Run("dropped cargo reduces effective request", DroppedLoadedCargoReducesEffectiveRequest);
+            Run("formation order is deterministic", FormationOrderIsIndependentOfEnumerationOrder);
+            Run("partial reservation leaves remainder", PartialReservationLeavesWaitingRemainder);
+            Run("reservations share stacks", MultipleReservationsShareOneStackWithoutOverlap);
+            Run("reservation caps at stack size", ReservationAllocationCapsAtStackSize);
+            Run("manifest follows reordered definitions", ManifestSlotsFollowDefinitionsAcrossReorder);
+            Run("manifest handles structural changes", ManifestSlotsHandleStructuralAddAndRemove);
+            Run("duplicate definitions use transfer identity", DuplicateDefinitionsFollowTransferGroupIdentity);
+            Run("minified identity survives refresh", MinifiedIdentitySurvivesRefreshAndLoad);
+            Run("wide cargo layout", WideCargoLayoutKeepsEveryColumn);
+            Run("narrow cargo layout", NarrowCargoLayoutCollapsesLeastDiagnosticColumns);
+            Run("cargo labels remain nonnegative", CargoLabelNeverCollapsesBelowZero);
+            Run("member layout drops detail first", MemberLayoutDropsDetailBeforeName);
+            Run("sparse content stays compact", SparseContentProducesCompactWindow);
+            Run("dense content respects ceiling", DenseContentStopsAtTheWindowCeiling);
+            Run("small screens stay bounded", SmallScreensNeverExceedTheirBounds);
+            Run("empty list reserves placeholder", EmptyListStillReservesItsPlaceholder);
+            Run("progress values clamp", ProgressValuesClampAtEveryBoundary);
+            Run("progress label fits inside bar", ProgressLabelOutlineFitsInsideTheBar);
+            return Finish();
         }
 
         private static void LoadedAndRemainingAreStable()
@@ -388,23 +386,5 @@ namespace CaravanReadiness.Tests
             Equal(0f, tiny.Height, "tiny progress bar has no negative height");
         }
 
-        private static void True(bool condition, string scenario)
-        {
-            assertions++;
-            if (!condition)
-            {
-                throw new InvalidOperationException(scenario + ": expected true");
-            }
-        }
-
-        private static void Equal<T>(T expected, T actual, string scenario)
-        {
-            assertions++;
-            if (!EqualityComparer<T>.Default.Equals(expected, actual))
-            {
-                throw new InvalidOperationException(
-                    $"{scenario}: expected {expected}, actual {actual}");
-            }
-        }
     }
 }

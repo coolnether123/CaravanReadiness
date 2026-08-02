@@ -13,7 +13,7 @@ namespace CaravanReadiness.Bootstrap
         {
             SpineApi.Runtime.Require(new SpineRequirement(
                 "CoolNether123.CaravanReadiness",
-                new SemanticVersion(1, 1, 0),
+                new SemanticVersion(1, 0, 0),
                 SpineCapability.HarmonyPatching |
                 SpineCapability.TooltipSizing));
 
@@ -23,4 +23,3 @@ namespace CaravanReadiness.Bootstrap
         }
     }
 }
-

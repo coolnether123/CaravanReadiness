@@ -7,5 +7,16 @@
   "project": "Source/Mod.csproj",
   "configuration": "Release",
   "assemblyName": "CaravanReadiness",
-  "packageId": "coolnether123.caravanreadiness"
+  "packageId": "CoolNether123.CaravanReadiness",
+  "releaseIncludePaths": [
+    "About",
+    "1.6/Assemblies/CaravanReadiness.dll",
+    "Languages",
+    "Patches",
+    "LICENSE"
+  ],
+  "dependencies": [
+    "harmony",
+    "spine"
+  ]
 }

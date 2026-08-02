@@ -6,6 +6,29 @@
     "versionManifestSha256": "0174C74429A3B1D9B272002A055FDBBC6645A0BF24A085E8BF39FDD3407B505B",
     "gameAssemblySha256": "4A170804FBFEFABDB620D8914E584E58F822A58C6E304DCB76A67003588DAB28"
   },
+  "currentCandidate": {
+    "date": "2026-08-02",
+    "sourceBaseCommit": "5719ef6b47fae89c04eae8d00146c76966f615ff",
+    "sourceStateAtBuild": "working tree release candidate; commit pending",
+    "assemblyVersion": "1.0.0.0",
+    "modAssemblySizeBytes": 52224,
+    "modAssemblySha256": "912B5E0A302073F489D0627E9789D92D5C872AB499A50DC61774AEB2040AB727",
+    "spineSha256": "3E857A09793BBFF839D0C18D197E480C9365B6384148F49F48669F068BBB9086",
+    "buildWarnings": 0,
+    "buildErrors": 0,
+    "automatedTests": "25 contracts, 81 assertions passed",
+    "packageValidation": "RWT-BUILD-PACKAGE-VALID",
+    "shippingDllCount": 1,
+    "developerFixtureIncluded": false,
+    "releaseIncludePaths": [
+      "About",
+      "1.6/Assemblies/CaravanReadiness.dll",
+      "Languages",
+      "Patches",
+      "LICENSE"
+    ],
+    "runtimeEvidenceNotice": "The runtime sessions below remain exact evidence for their named historical assemblies. A final combined launch is required for this centralized-service rebuild."
+  },
   "source": {
     "commit": "87afef5b252ef6d8896889df4eae23c6c6bfb418",
     "state": "committed",

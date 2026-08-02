@@ -5,6 +5,7 @@
     <AssemblyName>CaravanReadiness.Tests</AssemblyName>
     <RootNamespace>CaravanReadiness.Tests</RootNamespace>
     <Deterministic>true</Deterministic>
+    <RwtTestSupportProject Condition="'$(RwtTestSupportProject)' == ''">$(MSBuildThisFileDirectory)..\..\..\Worktrees\RimWorld-Tooling\phase-a\test-support\RimWorld.ModTestSupport\RimWorld.ModTestSupport.csproj</RwtTestSupportProject>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Source\Domain\CargoCountLedger.cs"
@@ -19,5 +20,8 @@
              Link="StackQuantityAllocator.cs" />
     <Compile Include="..\Source\UI\ReadinessLayout.cs"
              Link="ReadinessLayout.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(RwtTestSupportProject)" />
   </ItemGroup>
 </Project>

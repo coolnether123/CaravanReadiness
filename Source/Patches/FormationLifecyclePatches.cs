@@ -5,24 +5,31 @@ using RimWorld.Planet;
 using Verse;
 using Verse.AI.Group;
 using CaravanReadiness.State;
+using Spine.Api;
+using Spine.Harmony;
 
 namespace CaravanReadiness.Patches
 {
     internal static class FormationLifecyclePatches
     {
         private const string HarmonyId = "CoolNether123.CaravanReadiness";
+        private static readonly IHarmonyPatchInstaller Installer =
+            SpineApi.Patching.CreateInstaller(
+                HarmonyId,
+                "[Caravan Readiness]");
 
         public static void Install()
         {
-            Harmony harmony = new Harmony(HarmonyId);
-            harmony.Patch(
+            Installer.TryPatch(
+                "formation start",
                 AccessTools.Method(
                     typeof(CaravanFormingUtility),
                     nameof(CaravanFormingUtility.StartFormingCaravan)),
                 postfix: new HarmonyMethod(
                     typeof(FormationLifecyclePatches),
                     nameof(CaptureAfterStart)));
-            harmony.Patch(
+            Installer.TryPatch(
+                "formation cleanup",
                 AccessTools.Method(
                     typeof(LordManager),
                     nameof(LordManager.RemoveLord)),

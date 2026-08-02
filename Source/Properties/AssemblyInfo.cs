@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 [assembly: AssemblyTitle("Caravan Readiness")]
 [assembly: AssemblyDescription("Live diagnostics for vanilla caravan formation")]
@@ -6,4 +7,4 @@ using System.Reflection;
 [assembly: AssemblyProduct("Caravan Readiness")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-
+[assembly: InternalsVisibleTo("CaravanReadiness.TestFixture")]

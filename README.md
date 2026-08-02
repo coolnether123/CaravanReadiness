@@ -8,7 +8,7 @@ When a vanilla caravan is forming, select its hitching spot and open **Caravan r
 
 - RimWorld 1.6
 - Harmony
-- Spine 1.1 or newer
+- Spine 1.0
 
 ## Design boundaries
 
@@ -32,3 +32,8 @@ See [research](docs/research/duplicate-check.md), [architecture](docs/architectu
 ## License and attribution
 
 Caravan Readiness is released under the [MIT License](LICENSE). Harmony and Spine are used under their own licenses. Existing caravan mods were consulted only for behavioral and compatibility research; no code was copied.
+## Developer verification
+
+Live debug actions are isolated in
+`Developer/CaravanReadiness.TestFixture`. Build and load that folder only for harness
+verification; it is not part of the Caravan Readiness shipping package.

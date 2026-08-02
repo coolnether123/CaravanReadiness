@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>Caravan Readiness Test Fixture</name>
+  <author>CoolNether123</author>
+  <packageId>CoolNether123.CaravanReadiness.TestFixture</packageId>
+  <supportedVersions><li>1.6</li></supportedVersions>
+  <modDependencies><li><packageId>CoolNether123.CaravanReadiness</packageId><displayName>Caravan Readiness</displayName></li></modDependencies>
+  <loadAfter><li>CoolNether123.CaravanReadiness</li></loadAfter>
+  <description>Developer-only caravan formation fixtures and probes. Do not include in release packages.</description>
+</ModMetaData>
