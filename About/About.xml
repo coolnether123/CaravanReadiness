@@ -16,6 +16,7 @@
     <li>
       <packageId>CoolNether123.Spine</packageId>
       <displayName>Spine</displayName>
+      <downloadUrl>https://github.com/coolnether123/Spine</downloadUrl>
     </li>
   </modDependencies>
   <loadAfter>
