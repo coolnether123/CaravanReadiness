@@ -7,6 +7,8 @@
   <CR_SelectFormation>Select caravan</CR_SelectFormation>
   <CR_SelectFormationTooltip>Several caravans use this hitching spot. Choose one manifest; they are never merged.</CR_SelectFormationTooltip>
   <CR_PhaseSummary>Current phase: {0}</CR_PhaseSummary>
+  <CR_ProgressBarLabel>{0} / {1} loaded</CR_ProgressBarLabel>
+  <CR_ProgressNoCargo>No cargo requested</CR_ProgressNoCargo>
   <CR_ProgressSummary>{0} / {1} loaded  -  {2} being carried  -  {3} reserved</CR_ProgressSummary>
   <CR_EmptyFormation>No caravan is currently forming at this hitching spot.</CR_EmptyFormation>
   <CR_TabCargo>Cargo</CR_TabCargo>
@@ -14,14 +16,21 @@
   <CR_TabAnimals>Animals</CR_TabAnimals>
   <CR_TabProblems>Problems ({0})</CR_TabProblems>
   <CR_SearchHint>Search this view...</CR_SearchHint>
+  <CR_RowCount>{0} shown</CR_RowCount>
   <CR_ColumnItem>Item</CR_ColumnItem>
   <CR_ColumnLoaded>Loaded / requested</CR_ColumnLoaded>
-  <CR_ColumnLoadedCompact>Loaded / goal</CR_ColumnLoadedCompact>
+  <CR_ColumnLoadedShort>Loaded</CR_ColumnLoadedShort>
   <CR_ColumnCarried>Carried</CR_ColumnCarried>
   <CR_ColumnReserved>Reserved</CR_ColumnReserved>
   <CR_ColumnWaiting>Waiting</CR_ColumnWaiting>
   <CR_ColumnProblems>Problems</CR_ColumnProblems>
+  <CR_ColumnsTooltip>Loaded: loaded units out of the requested total.
+Carried: units a colonist is carrying right now.
+Reserved: units claimed by a caravan hauling job.
+Waiting: units still waiting to be hauled.
+Problems: units with a known blocker.</CR_ColumnsTooltip>
   <CR_NoSearchResults>No matching rows.</CR_NoSearchResults>
+  <CR_SectionEmpty>Nothing in this view.</CR_SectionEmpty>
   <CR_AllReady>No known blockers. Vanilla will depart when its remaining formation steps finish.</CR_AllReady>
   <CR_CargoTooltip>Requested: {0}
 Loaded: {1}

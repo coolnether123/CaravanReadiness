@@ -247,6 +247,12 @@ namespace CaravanReadiness.State
                     continue;
                 }
 
+                // Hazards describe the real source stack even when another
+                // bucket already accounts for all of its quantity. A stack
+                // reserved for caravan hauling can still catch fire.
+                forbidden |= candidate.IsForbidden(Faction.OfPlayer);
+                burning |= candidate.IsBurning();
+
                 classifiedQuantities.TryGetValue(
                     candidate,
                     out int classifiedQuantity);
@@ -258,8 +264,6 @@ namespace CaravanReadiness.State
                     continue;
                 }
 
-                forbidden |= candidate.IsForbidden(Faction.OfPlayer);
-                burning |= candidate.IsBurning();
                 bool canReach = haulers.Any(pawn =>
                     pawn.CanReach(candidate, PathEndMode.Touch, Danger.Deadly));
                 if (canReach)

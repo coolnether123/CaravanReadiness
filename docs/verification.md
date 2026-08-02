@@ -1,13 +1,21 @@
 # Verification report
 
-Date: 2026-08-01. RimWorld: 1.6.4871 rev574. The final shipping assembly hash is recorded in `Engineering/evidence.json` after the last clean build.
+Date: 2026-08-01. RimWorld: 1.6.4871 rev574. The exact redesigned assembly hash and final live lane are recorded below; `Engineering/evidence.json` will be regenerated with the complete suite during release packaging.
 
 Portable provenance, raw-log hashes, active mods, and the exact release allowlist are recorded in [`Engineering/evidence.json`](../Engineering/evidence.json). Curated, path-free runtime lines are preserved under [`docs/evidence`](evidence/); the raw harness logs remain external and are identified by hash rather than copied with machine-specific paths.
+
+## Loaded-cargo accounting correction — 2026-08-02
+
+- The release-blocker reproduction was traced to `CargoInventoryCounter`: it treated `Pawn_InventoryTracker.UnloadEverything` as though it proved every item in the pawn inventory was unrelated to the active caravan. Vanilla uses that flag as delayed cancellation cleanup, and it can still be set when the next formation transfers a selected stack into the same pawn inventory.
+- The counter now keeps the transferable group's existing `TransferAsOne` membership check and no longer discards that whole inventory. This preserves the authoritative `40 requested / 7 loaded / 33 remaining` Steel transition after the carry tracker transfers the stack into a caravan member inventory.
+- Focused automated verification passed: `dotnet run --project Tests\\Mod.Tests.csproj -c Release` reported `PASS: 65 Caravan Readiness assertions`, including the new carry-to-inventory regression. The unchanged debug action `Stage loaded cargo` remains the live assertion for the exact production transition.
+- A fresh 1.6 assembly was built by the shared RimWorld tooling with resolved Harmony and Spine dependencies. DLL SHA-256: `E55BCEA1F8027D5E9DF4E039879DE009E9EBAC133FE915C3463A5DC79CE18A2E`.
+- Live rerun is pending the concurrent harness mailbox repair. Two isolated lanes reached Entry and then their harness-owned startup commands remained queued; this is recorded as a harness boundary, not a Caravan Readiness pass.
 
 ## Automated and packaging checks
 
 - Release/MSBuild build succeeded through the generalized RimWorld tooling against the registered RimWorld 1.6 references, Harmony 2.4.2, and Spine.
-- The isolated suite passed 43 cargo-ledger, ordering, reservation-allocation, and structural-manifest assertions. Five manifest-observation assertions also passed for loading, manifest growth, manifest reduction, dropped inventory, and zero-clamping. No prior test was changed or weakened.
+- The isolated suite passed 62 cargo-ledger, ordering, reservation-allocation, structural-manifest, adaptive-height, and responsive-column assertions. Five manifest-observation assertions also passed for loading, manifest growth, manifest reduction, dropped inventory, and zero-clamping. No prior test was changed or weakened.
 - New regressions prove a partial reservation leaves its remainder, two reservers on one stack do not overlap, over-reservation caps at stack size, transfer-group identities survive reorder, new rows receive new slots, removed rows are dropped, duplicate outer definitions retain the right history, and minified identities survive refresh/load.
 - Harmony runtime audit: two patched methods, one prefix, one postfix, zero transpilers, zero finalizers, all owned by `CoolNether123.CaravanReadiness`.
 - The final package validator returned `RWT-BUILD-PACKAGE-VALID` for the local release staging represented by the portable allowlist in `Engineering/evidence.json`.
@@ -32,23 +40,25 @@ The generalized harness created controlled colonies and invoked DevMode-only fix
 
 ## UI evidence
 
+- [Compact readiness view](screenshots/readiness-window-final-compact.png): the exact final DLL shrinks an all-clear Problems view to its content instead of leaving a large empty fixed-height window.
+- [Cargo view](screenshots/cargo-window-final.png): the exact final DLL shows the full Loaded, Carried, Reserved, Waiting, and Problems headings with alternating native rows and item icons.
+- [Narrow cargo view](screenshots/narrow-window-final-adaptive.png): at the 560 px width floor, the least useful diagnostic column collapses so every remaining heading and quantity stays legible.
+
 - [Rightmost gizmo](screenshots/gizmo-rightmost-final.png): Deconstruct, Form caravan, and Build copy remain in vanilla order; Caravan readiness is the far-right command.
 - [Transfer identity after load](screenshots/transfer-identity-final.png): the surviving Simple meal remains `0 / 3`, the minified Steel shelf remains `0 / 1`, and the readiness command remains far right.
-- [Narrow report](screenshots/narrow-window-final.png): the 720 × 480 minimum layout remains readable and uses the localized `Loaded / goal` heading without truncation.
-- [Wide cargo view](screenshots/cargo-readiness-polished.png): full requested/loaded, carried, reserved, waiting, and problem columns.
 - [Problems view](screenshots/problems-readiness-polished.png): concise blocking and warning rows with exact quantities.
 - [Packing spot after save/reload](screenshots/packing-spot-after-reload.png): component and save/reload smoke evidence.
 
-The harness' semantic action path could open every section and the production navigation method selected the expected target. Direct pointer injection into the Unity child window remained unavailable: the harness mouse bridge did not activate the control and the Windows capture API returned `0x80004002`. Therefore the exact physical row-click gesture is not claimed, although the same method called by that row completed successfully in game.
+The harness opened every section, used real Unity-client pointer clicks to switch tabs, and the production navigation method selected the expected target.
 
 ## Player.log analysis
 
-The affected-workflow lane was `CaravanReadiness-2ec63e61f6f84074b771ff364c5524e5`; the final-DLL UI/order lane was `CaravanReadiness-d7251edb742e46d087e2bbe64c7bd52f`; and the final transfer-identity lane was `CaravanReadiness-c3a9a6e473aa4f16acbaa95c2ec69fb6`. Error and exception scans found no matching runtime entries from Caravan Readiness, RimWorld, Harmony, or Player.log.
+The exact redesigned DLL (`9DD224D416B06554EF151E2D0E4861C20761B4EAB16E9A69D8C5C367169B33A2`) was verified in lane `new-four-0cfd0dbeb3e447baa914191239b90bab` with all four new gameplay mods and Spine enabled. The compact, full-width cargo, and narrow cargo views were exercised through real Unity pointer input. The in-game log contained no errors or exceptions; only the already documented missing public download-URL warnings for the unpublished local Spine dependency remained. Earlier affected-workflow, UI/order, and transfer-identity lanes remain `CaravanReadiness-2ec63e61f6f84074b771ff364c5524e5`, `CaravanReadiness-d7251edb742e46d087e2bbe64c7bd52f`, and `CaravanReadiness-c3a9a6e473aa4f16acbaa95c2ec69fb6`.
 
 Two startup warnings remain and are not caused by Caravan Readiness runtime behavior:
 
 - RimWorld requests a public download URL for the local Spine dependency. No URL was fabricated for an unpublished local dependency.
-- RimWorld Agent reports `ConnectedOutlineDrawer` may need `StaticConstructorOnStartup`; this type belongs to the generalized test harness.
+- The earlier `ConnectedOutlineDrawer` startup warning came from Spine, not the generalized test harness. Spine now marks that shared drawer with `StaticConstructorOnStartup`; the final combined run must confirm the warning is gone.
 
 All game processes stopped without forced termination and their lanes were released. The final identity lane then reported a harness-owned runtime-directory cleanup warning, `Access to the path 'RimWorldWin64.exe' is denied`; it occurred after process exit, did not affect the released status or evidence, and is recorded for harness hardening.
 

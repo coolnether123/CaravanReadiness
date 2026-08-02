@@ -20,11 +20,17 @@ namespace CaravanReadiness.State
             int count = 0;
             foreach (Pawn carrier in carriers)
             {
-                if (carrier?.inventory == null ||
-                    carrier.inventory.UnloadEverything)
+                if (carrier?.inventory == null)
                 {
                     continue;
                 }
+
+                // UnloadEverything is a delayed vanilla cancellation flag,
+                // not an ownership test. It can remain set while the next
+                // formation has already placed selected cargo into this
+                // pawn's inventory. The transferable group remains the
+                // authoritative membership check below, so excluding the
+                // whole inventory here loses real loaded cargo.
 
                 foreach (Thing item in carrier.inventory.innerContainer)
                 {

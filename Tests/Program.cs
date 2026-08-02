@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CaravanReadiness.Domain;
+using CaravanReadiness.UI;
 
 namespace CaravanReadiness.Tests
 {
@@ -14,6 +15,7 @@ namespace CaravanReadiness.Tests
             InFlightCountsAreSubsetsOfRemaining();
             ProblemBucketsAreCappedWithoutOverlap();
             MissingSourcesBecomeUnavailable();
+            LoadedTransitionRetainsOriginalRequest();
             ReducedManifestDoesNotCreatePhantomLoadedCargo();
             DroppedLoadedCargoReducesEffectiveRequest();
             FormationOrderIsIndependentOfEnumerationOrder();
@@ -24,6 +26,14 @@ namespace CaravanReadiness.Tests
             ManifestSlotsHandleStructuralAddAndRemove();
             DuplicateDefinitionsFollowTransferGroupIdentity();
             MinifiedIdentitySurvivesRefreshAndLoad();
+            WideCargoLayoutKeepsEveryColumn();
+            NarrowCargoLayoutCollapsesLeastDiagnosticColumns();
+            CargoLabelNeverCollapsesBelowZero();
+            MemberLayoutDropsDetailBeforeName();
+            SparseContentProducesCompactWindow();
+            DenseContentStopsAtTheWindowCeiling();
+            SmallScreensNeverExceedTheirBounds();
+            EmptyListStillReservesItsPlaceholder();
 
             Console.WriteLine($"PASS: {assertions} Caravan Readiness assertions");
             return 0;
@@ -78,6 +88,35 @@ namespace CaravanReadiness.Tests
                 accessible: 2, inaccessible: 1, blocked: 0);
             Equal(2, ledger.Unavailable, "destroyed or missing source units");
             Equal(1, ledger.Inaccessible, "inaccessible source units");
+        }
+
+        private static void LoadedTransitionRetainsOriginalRequest()
+        {
+            // Vanilla reduces CountToTransfer only after moving the carried
+            // stack into a caravan member's inventory. The tracked target
+            // must therefore remain forty when seven Steel transitions from
+            // the carry tracker to inventory and thirty-three remain.
+            int requested = ManifestRequestTracker.Observe(
+                previousRequested: 40,
+                previousRemaining: 40,
+                previousInventory: 0,
+                currentRemaining: 33,
+                currentInventory: 7);
+            CargoCountLedger ledger = CargoCountLedger.Create(
+                initialRequested: requested,
+                remaining: 33,
+                compatibleInventory: 7,
+                carried: 0,
+                reserved: 0,
+                accessible: 33,
+                inaccessible: 0,
+                blocked: 0);
+            Equal(40, ledger.Requested,
+                "carry-to-inventory transition retains the original request");
+            Equal(7, ledger.Loaded,
+                "carry-to-inventory transition retains loaded cargo");
+            Equal(33, ledger.Remaining,
+                "carry-to-inventory transition retains remaining cargo");
         }
 
         private static void ReducedManifestDoesNotCreatePhantomLoadedCargo()
@@ -217,6 +256,101 @@ namespace CaravanReadiness.Tests
                 "serialized minified stool identity survives load");
             Equal(1, loaded[1],
                 "serialized minified shelf identity survives load");
+        }
+
+        private static void WideCargoLayoutKeepsEveryColumn()
+        {
+            CargoColumnLayout columns =
+                ReadinessLayout.ResolveCargoColumns(760f);
+            True(columns.ShowCarried, "wide layout keeps carried");
+            True(columns.ShowReserved, "wide layout keeps reserved");
+            True(columns.ShowWaiting, "wide layout keeps waiting");
+            True(columns.ShowProblems, "wide layout keeps problems");
+            True(
+                columns.LabelWidth >= ReadinessLayout.MinimumLabelWidth,
+                "wide layout keeps a readable item label");
+        }
+
+        private static void NarrowCargoLayoutCollapsesLeastDiagnosticColumns()
+        {
+            CargoColumnLayout columns =
+                ReadinessLayout.ResolveCargoColumns(420f);
+            True(!columns.ShowCarried, "narrow layout drops carried first");
+            True(columns.ShowProblems, "narrow layout keeps problems longest");
+            True(
+                columns.LabelWidth >= ReadinessLayout.MinimumLabelWidth,
+                "narrow layout still protects the item label");
+        }
+
+        private static void CargoLabelNeverCollapsesBelowZero()
+        {
+            CargoColumnLayout columns =
+                ReadinessLayout.ResolveCargoColumns(80f);
+            True(!columns.ShowProblems, "extreme narrow drops every optional column");
+            True(columns.LabelWidth >= 0f, "label width never goes negative");
+            True(
+                columns.NumericWidth <= ReadinessLayout.LoadedColumnWidth,
+                "extreme narrow keeps only the loaded column");
+        }
+
+        private static void MemberLayoutDropsDetailBeforeName()
+        {
+            MemberColumnLayout wide =
+                ReadinessLayout.ResolveMemberColumns(760f);
+            True(wide.ShowDetail, "wide member layout shows the explanation");
+            MemberColumnLayout narrow =
+                ReadinessLayout.ResolveMemberColumns(480f);
+            True(!narrow.ShowDetail, "narrow member layout drops the explanation");
+            True(narrow.StatusWidth > 0f, "narrow member layout keeps the status");
+            True(
+                narrow.NameWidth >= ReadinessLayout.MinimumMemberNameWidth,
+                "narrow member layout keeps a readable name column");
+        }
+
+        private static void SparseContentProducesCompactWindow()
+        {
+            float section = ReadinessLayout.SectionHeight(
+                ReadinessLayout.ListHeight(3, ReadinessLayout.ProblemRowHeight, false));
+            float height = ReadinessLayout.DesiredWindowHeight(156f, section, 1080f);
+            True(
+                height <= ReadinessLayout.MinimumWindowHeight,
+                "a three-row report stays at the compact minimum");
+        }
+
+        private static void DenseContentStopsAtTheWindowCeiling()
+        {
+            float section = ReadinessLayout.SectionHeight(
+                ReadinessLayout.ListHeight(120, ReadinessLayout.RowHeight, true));
+            float height = ReadinessLayout.DesiredWindowHeight(156f, section, 1080f);
+            Equal(
+                ReadinessLayout.MaximumWindowHeight,
+                height,
+                "a large manifest stops at the scrolling ceiling");
+        }
+
+        private static void SmallScreensNeverExceedTheirBounds()
+        {
+            float section = ReadinessLayout.SectionHeight(
+                ReadinessLayout.ListHeight(60, ReadinessLayout.RowHeight, true));
+            float height = ReadinessLayout.DesiredWindowHeight(156f, section, 600f);
+            Equal(520f, height, "the window fits inside a 600 pixel screen");
+        }
+
+        private static void EmptyListStillReservesItsPlaceholder()
+        {
+            Equal(
+                ReadinessLayout.EmptyStateHeight,
+                ReadinessLayout.ListHeight(0, ReadinessLayout.RowHeight, true),
+                "an empty view reserves only its placeholder");
+        }
+
+        private static void True(bool condition, string scenario)
+        {
+            assertions++;
+            if (!condition)
+            {
+                throw new InvalidOperationException(scenario + ": expected true");
+            }
         }
 
         private static void Equal<T>(T expected, T actual, string scenario)

@@ -17,5 +17,7 @@
              Link="ManifestSlotReconciler.cs" />
     <Compile Include="..\Source\Domain\StackQuantityAllocator.cs"
              Link="StackQuantityAllocator.cs" />
+    <Compile Include="..\Source\UI\ReadinessLayout.cs"
+             Link="ReadinessLayout.cs" />
   </ItemGroup>
 </Project>

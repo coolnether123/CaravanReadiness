@@ -10,27 +10,59 @@ using Verse.AI.Group;
 
 namespace CaravanReadiness.UI
 {
+    [StaticConstructorOnStartup]
     public sealed class Dialog_CaravanReadiness : Window
     {
         private const int RefreshIntervalTicks = 120;
-        private const float RowHeight = 30f;
-        private const float ItemColumnEnd = 0.27f;
-        private const float LoadedColumnEnd = 0.44f;
-        private const float CarriedColumnEnd = 0.55f;
-        private const float ReservedColumnEnd = 0.67f;
-        private const float WaitingColumnEnd = 0.79f;
-        internal const float MinimumWindowWidth = 720f;
-        internal const float MinimumWindowHeight = 480f;
+        private const float TitleHeight = 32f;
+        private const float TitleGap = 6f;
+        private const float PhaseHeight = 20f;
+        private const float BarHeight = 20f;
+        private const float StatusHeight = PhaseHeight + 2f + BarHeight;
+        private const float StatusGap = 8f;
+        private const float TabHeight = 32f;
+        private const float CloseButtonReserve = 30f;
+        private const float IconSize = 24f;
+        private const float AccentWidth = 3f;
+        private const float CellPadding = 8f;
+
+        internal const float MinimumWindowWidth = ReadinessLayout.MinimumWindowWidth;
+        internal const float MinimumWindowHeight = ReadinessLayout.MinimumWindowHeight;
+
+        private static readonly Texture2D BarBackgroundTex =
+            SolidColorMaterials.NewSolidColorTexture(new Color(0.09f, 0.09f, 0.09f));
+        private static readonly Texture2D BarProgressTex =
+            SolidColorMaterials.NewSolidColorTexture(new Color(0.28f, 0.44f, 0.60f));
+        private static readonly Texture2D BarReadyTex =
+            SolidColorMaterials.NewSolidColorTexture(new Color(0.29f, 0.55f, 0.33f));
+
+        private static readonly Color MutedColor = new Color(0.66f, 0.66f, 0.66f);
+        private static readonly Color BlockingColor = new Color(0.85f, 0.33f, 0.28f);
+        private static readonly Color WarningColor = new Color(0.93f, 0.71f, 0.28f);
+        private static readonly Color InformationColor = new Color(0.45f, 0.68f, 0.88f);
+        private static readonly Color ReadyColor = new Color(0.52f, 0.78f, 0.50f);
+
         private readonly Map map;
         private readonly IntVec3 spotCell;
+        private readonly List<TabRecord> tabs = new List<TabRecord>();
+        private readonly List<CargoReadinessRow> visibleCargo =
+            new List<CargoReadinessRow>();
+        private readonly List<MemberReadinessRow> visibleMembers =
+            new List<MemberReadinessRow>();
+        private readonly List<ProblemReadinessRow> visibleProblems =
+            new List<ProblemReadinessRow>();
+
         private int selectedLordLoadId;
         private int nextRefreshTick = -1;
         private List<Lord> activeFormations = new List<Lord>();
         private FormationReadinessSnapshot snapshot;
         private ReadinessSection section = ReadinessSection.Problems;
         private Vector2 scrollPosition;
-        private float scrollHeight;
         private string searchText = string.Empty;
+        private bool filterDirty = true;
+        private float measuredWindowHeight = -1f;
+        private float appliedWindowHeight = -1f;
+        private bool autoHeight = true;
 
         public Dialog_CaravanReadiness(
             Map map,
@@ -60,19 +92,129 @@ namespace CaravanReadiness.UI
             absorbInputAroundWindow = false;
         }
 
-        public override Vector2 InitialSize => new Vector2(900f, 650f);
+        public override Vector2 InitialSize => new Vector2(
+            ReadinessLayout.PreferredWindowWidth,
+            ReadinessLayout.MinimumWindowHeight);
 
         public override void WindowOnGUI()
         {
+            ApplyAdaptiveHeight();
+            ClampToScreen();
+            base.WindowOnGUI();
+        }
+
+        public override void DoWindowContents(Rect inRect)
+        {
+            RefreshIfNeeded();
+            float y = inRect.y;
+            DrawTitleRow(new Rect(inRect.x, y, inRect.width, TitleHeight));
+            y += TitleHeight + TitleGap;
+
+            if (snapshot == null)
+            {
+                Rect empty = new Rect(
+                    inRect.x,
+                    y,
+                    inRect.width,
+                    ReadinessLayout.EmptyStateHeight);
+                Widgets.DrawMenuSection(empty);
+                DrawCentered(empty, "CR_EmptyFormation".Translate(), MutedColor);
+                measuredWindowHeight = ReadinessLayout.DesiredWindowHeight(
+                    (empty.y - inRect.y) + (Margin * 2f),
+                    ReadinessLayout.EmptyStateHeight,
+                    Verse.UI.screenHeight);
+                return;
+            }
+
+            DrawStatus(new Rect(inRect.x, y, inRect.width, StatusHeight));
+            y += StatusHeight + StatusGap + TabHeight;
+
+            if (filterDirty)
+            {
+                RebuildVisibleRows();
+            }
+
+            float chrome = (y - inRect.y) + (Margin * 2f);
+            float wanted = ReadinessLayout.SectionHeight(
+                ReadinessLayout.ListHeight(
+                    VisibleRowCount,
+                    ActiveRowHeight,
+                    section == ReadinessSection.Cargo && VisibleRowCount > 0));
+            measuredWindowHeight = ReadinessLayout.DesiredWindowHeight(
+                chrome,
+                wanted,
+                Verse.UI.screenHeight);
+
+            // While the window sizes itself the panel matches its content; once
+            // the player has chosen a height the panel fills what they asked for.
+            float available = Mathf.Max(
+                ReadinessLayout.EmptyStateHeight,
+                inRect.yMax - y);
+            DrawSection(new Rect(
+                inRect.x,
+                y,
+                inRect.width,
+                autoHeight ? Mathf.Min(available, wanted) : available));
+        }
+
+        private float ActiveRowHeight => section == ReadinessSection.Problems
+            ? ReadinessLayout.ProblemRowHeight
+            : ReadinessLayout.RowHeight;
+
+        private int VisibleRowCount
+        {
+            get
+            {
+                switch (section)
+                {
+                    case ReadinessSection.Cargo:
+                        return visibleCargo.Count;
+                    case ReadinessSection.People:
+                    case ReadinessSection.Animals:
+                        return visibleMembers.Count;
+                    default:
+                        return visibleProblems.Count;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Resizes the window to its content until the player drags the
+        /// resizer, after which the chosen height is respected.
+        /// </summary>
+        private void ApplyAdaptiveHeight()
+        {
+            if (measuredWindowHeight <= 0f)
+            {
+                return;
+            }
+            if (appliedWindowHeight > 0f &&
+                Mathf.Abs(windowRect.height - appliedWindowHeight) > 1f)
+            {
+                autoHeight = false;
+            }
+            if (!autoHeight)
+            {
+                return;
+            }
+            windowRect.height = measuredWindowHeight;
+            appliedWindowHeight = measuredWindowHeight;
+        }
+
+        private void ClampToScreen()
+        {
             float maximumWidth = Mathf.Max(150f, Verse.UI.screenWidth - 20f);
             float maximumHeight = Mathf.Max(150f, Verse.UI.screenHeight - 20f);
+            float minimumHeight = autoHeight && measuredWindowHeight > 0f
+                ? ReadinessLayout.MinimumAdaptiveWindowHeight
+                : ReadinessLayout.MinimumWindowHeight;
             windowRect.width = Mathf.Clamp(
                 windowRect.width,
-                Mathf.Min(MinimumWindowWidth, maximumWidth),
+                Mathf.Min(ReadinessLayout.MinimumWindowWidth, maximumWidth),
                 maximumWidth);
             windowRect.height = Mathf.Clamp(
                 windowRect.height,
-                Mathf.Min(MinimumWindowHeight, maximumHeight),
+                Mathf.Min(minimumHeight, maximumHeight),
                 maximumHeight);
             windowRect.x = Mathf.Clamp(
                 windowRect.x,
@@ -82,30 +224,6 @@ namespace CaravanReadiness.UI
                 windowRect.y,
                 0f,
                 Mathf.Max(0f, Verse.UI.screenHeight - windowRect.height));
-            base.WindowOnGUI();
-        }
-
-        public override void DoWindowContents(Rect inRect)
-        {
-            RefreshIfNeeded();
-            DrawHeader(inRect.TopPartPixels(106f));
-
-            Rect body = new Rect(
-                inRect.x,
-                inRect.y + 112f,
-                inRect.width,
-                inRect.height - 112f);
-            if (snapshot == null)
-            {
-                Text.Anchor = TextAnchor.MiddleCenter;
-                GUI.color = Color.gray;
-                Widgets.Label(body, "CR_EmptyFormation".Translate());
-                GUI.color = Color.white;
-                Text.Anchor = TextAnchor.UpperLeft;
-                return;
-            }
-
-            DrawBody(body);
         }
 
         private void RefreshIfNeeded()
@@ -128,24 +246,71 @@ namespace CaravanReadiness.UI
                 ? null
                 : ReadinessSnapshotBuilder.Build(selected);
             nextRefreshTick = ticks + RefreshIntervalTicks;
+            filterDirty = true;
         }
 
-        private void DrawHeader(Rect rect)
+        private void RebuildVisibleRows()
         {
-            Text.Font = GameFont.Medium;
-            Widgets.Label(
-                new Rect(rect.x, rect.y, rect.width - 250f, 32f),
-                "CR_WindowTitle".Translate());
-            Text.Font = GameFont.Small;
+            filterDirty = false;
+            visibleCargo.Clear();
+            visibleMembers.Clear();
+            visibleProblems.Clear();
+            if (snapshot == null)
+            {
+                return;
+            }
 
+            switch (section)
+            {
+                case ReadinessSection.Cargo:
+                    foreach (CargoReadinessRow row in snapshot.Cargo)
+                    {
+                        if (MatchesSearch(row.Label))
+                        {
+                            visibleCargo.Add(row);
+                        }
+                    }
+                    break;
+                case ReadinessSection.People:
+                    AddMembers(snapshot.People);
+                    break;
+                case ReadinessSection.Animals:
+                    AddMembers(snapshot.Animals);
+                    break;
+                default:
+                    foreach (ProblemReadinessRow row in snapshot.Problems)
+                    {
+                        if (MatchesSearch(row.Label) || MatchesSearch(row.Detail))
+                        {
+                            visibleProblems.Add(row);
+                        }
+                    }
+                    break;
+            }
+        }
+
+        private void AddMembers(List<MemberReadinessRow> rows)
+        {
+            foreach (MemberReadinessRow row in rows)
+            {
+                if (MatchesSearch(row.Pawn?.LabelShort) || MatchesSearch(row.Status))
+                {
+                    visibleMembers.Add(row);
+                }
+            }
+        }
+
+        private void DrawTitleRow(Rect rect)
+        {
+            float controlSpace = CloseButtonReserve;
             if (activeFormations.Count > 1)
             {
-                float selectorWidth = rect.width < 720f ? 180f : 240f;
+                float selectorWidth = Mathf.Clamp(rect.width * 0.32f, 140f, 220f);
                 Rect selector = new Rect(
-                    rect.xMax - selectorWidth,
-                    rect.y,
+                    rect.xMax - CloseButtonReserve - selectorWidth,
+                    rect.y + 1f,
                     selectorWidth,
-                    30f);
+                    28f);
                 if (Widgets.ButtonText(
                     selector,
                     snapshot?.DisplayName ?? "CR_SelectFormation".Translate()))
@@ -155,36 +320,72 @@ namespace CaravanReadiness.UI
                 TooltipHandler.TipRegion(
                     selector,
                     "CR_SelectFormationTooltip".Translate());
+                controlSpace += selectorWidth + 8f;
             }
 
-            if (snapshot != null)
-            {
-                Rect phaseRect = new Rect(rect.x, rect.y + 32f, rect.width, 24f);
-                Widgets.Label(
-                    phaseRect,
-                    "CR_PhaseSummary".Translate(snapshot.Phase));
-
-                Rect progressRect = new Rect(
+            DrawText(
+                new Rect(
                     rect.x,
-                    rect.y + 59f,
-                    rect.width,
-                    20f);
-                float progress = snapshot.RequestedTotal <= 0
-                    ? 1f
-                    : (float)snapshot.LoadedTotal / snapshot.RequestedTotal;
-                Widgets.FillableBar(progressRect, Mathf.Clamp01(progress));
-                Text.Anchor = TextAnchor.MiddleCenter;
-                Widgets.Label(
-                    progressRect,
-                    "CR_ProgressSummary".Translate(
-                        snapshot.LoadedTotal,
-                        snapshot.RequestedTotal,
-                        snapshot.CarriedTotal,
-                        snapshot.ReservedTotal));
-                Text.Anchor = TextAnchor.UpperLeft;
-            }
+                    rect.y,
+                    Mathf.Max(60f, rect.width - controlSpace),
+                    rect.height),
+                "CR_WindowTitle".Translate(),
+                TextAnchor.MiddleLeft,
+                Color.white,
+                GameFont.Medium);
+        }
 
-            DrawSectionButtons(new Rect(rect.x, rect.y + 82f, rect.width, 24f));
+        private void DrawStatus(Rect rect)
+        {
+            float progress = snapshot.RequestedTotal <= 0
+                ? 1f
+                : Mathf.Clamp01(
+                    (float)snapshot.LoadedTotal / snapshot.RequestedTotal);
+            bool complete = snapshot.RequestedTotal <= 0 ||
+                            snapshot.LoadedTotal >= snapshot.RequestedTotal;
+
+            DrawText(
+                new Rect(
+                    rect.x,
+                    rect.y,
+                    Mathf.Max(40f, rect.width - 76f),
+                    PhaseHeight),
+                "CR_PhaseSummary".Translate(snapshot.Phase),
+                TextAnchor.MiddleLeft,
+                MutedColor);
+            DrawText(
+                new Rect(rect.xMax - 70f, rect.y, 70f, PhaseHeight),
+                progress.ToStringPercent(),
+                TextAnchor.MiddleRight,
+                complete ? ReadyColor : Color.white);
+
+            Rect barRect = new Rect(
+                rect.x,
+                rect.y + PhaseHeight + 2f,
+                rect.width,
+                BarHeight);
+            Widgets.FillableBar(
+                barRect,
+                progress,
+                complete ? BarReadyTex : BarProgressTex,
+                BarBackgroundTex,
+                true);
+            DrawText(
+                barRect,
+                snapshot.RequestedTotal <= 0
+                    ? "CR_ProgressNoCargo".Translate()
+                    : "CR_ProgressBarLabel".Translate(
+                        snapshot.LoadedTotal,
+                        snapshot.RequestedTotal),
+                TextAnchor.MiddleCenter,
+                Color.white);
+            TooltipHandler.TipRegion(
+                barRect,
+                "CR_ProgressSummary".Translate(
+                    snapshot.LoadedTotal,
+                    snapshot.RequestedTotal,
+                    snapshot.CarriedTotal,
+                    snapshot.ReservedTotal));
         }
 
         private void ShowFormationMenu(List<Lord> formations)
@@ -202,202 +403,469 @@ namespace CaravanReadiness.UI
             Find.WindowStack.Add(new FloatMenu(options));
         }
 
-        private void DrawSectionButtons(Rect rect)
+        private void DrawSection(Rect rect)
         {
-            float width = rect.width / 4f;
-            DrawSectionButton(
-                new Rect(rect.x, rect.y, width, rect.height),
-                ReadinessSection.Cargo,
-                "CR_TabCargo".Translate());
-            DrawSectionButton(
-                new Rect(rect.x + width, rect.y, width, rect.height),
-                ReadinessSection.People,
-                "CR_TabPeople".Translate());
-            DrawSectionButton(
-                new Rect(rect.x + width * 2f, rect.y, width, rect.height),
-                ReadinessSection.Animals,
-                "CR_TabAnimals".Translate());
-            DrawSectionButton(
-                new Rect(rect.x + width * 3f, rect.y, width, rect.height),
-                ReadinessSection.Problems,
-                "CR_TabProblems".Translate(
-                    snapshot?.Problems.Count ?? 0));
+            Widgets.DrawMenuSection(rect);
+            DrawTabs(rect);
+
+            Rect inner = rect.ContractedBy(ReadinessLayout.SectionPadding);
+            Rect searchRow = new Rect(
+                inner.x,
+                inner.y,
+                inner.width,
+                ReadinessLayout.SearchRowHeight);
+            DrawSearchRow(searchRow);
+
+            float top = searchRow.yMax + ReadinessLayout.SearchGap;
+            DrawList(new Rect(
+                inner.x,
+                top,
+                inner.width,
+                Mathf.Max(0f, inner.yMax - top)));
         }
 
-        private void DrawSectionButton(
-            Rect rect,
-            ReadinessSection target,
-            string label)
+        private void DrawTabs(Rect rect)
+        {
+            tabs.Clear();
+            tabs.Add(new TabRecord(
+                "CR_TabCargo".Translate(),
+                () => SelectSection(ReadinessSection.Cargo),
+                section == ReadinessSection.Cargo));
+            tabs.Add(new TabRecord(
+                "CR_TabPeople".Translate(),
+                () => SelectSection(ReadinessSection.People),
+                section == ReadinessSection.People));
+            tabs.Add(new TabRecord(
+                "CR_TabAnimals".Translate(),
+                () => SelectSection(ReadinessSection.Animals),
+                section == ReadinessSection.Animals));
+            tabs.Add(new TabRecord(
+                "CR_TabProblems".Translate(snapshot?.Problems.Count ?? 0),
+                () => SelectSection(ReadinessSection.Problems),
+                section == ReadinessSection.Problems));
+            TabDrawer.DrawTabs(rect, tabs, 150f);
+        }
+
+        private void SelectSection(ReadinessSection target)
         {
             if (section == target)
             {
-                Widgets.DrawHighlightSelected(rect);
+                return;
             }
-            if (Widgets.ButtonText(rect.ContractedBy(2f), label))
-            {
-                section = target;
-                scrollPosition = Vector2.zero;
-            }
+            section = target;
+            scrollPosition = Vector2.zero;
+            filterDirty = true;
         }
 
-        private void DrawBody(Rect rect)
+        private void DrawSearchRow(Rect rect)
         {
-            Rect searchRect = new Rect(rect.x, rect.y, rect.width, 28f);
-            searchText = Widgets.TextField(searchRect, searchText ?? string.Empty);
+            float fieldWidth = Mathf.Clamp(rect.width - 140f, 110f, 260f);
+            Rect field = new Rect(rect.x, rect.y, fieldWidth, rect.height);
+            string typed = Widgets.TextField(field, searchText ?? string.Empty);
+            if (typed != searchText)
+            {
+                searchText = typed;
+                filterDirty = true;
+                scrollPosition = Vector2.zero;
+            }
+
             if (string.IsNullOrEmpty(searchText))
             {
-                GUI.color = Color.gray;
-                Widgets.Label(searchRect.ContractedBy(6f, 3f), "CR_SearchHint".Translate());
-                GUI.color = Color.white;
+                DrawText(
+                    new Rect(field.x + 6f, field.y, field.width - 12f, field.height),
+                    "CR_SearchHint".Translate(),
+                    TextAnchor.MiddleLeft,
+                    MutedColor);
+                return;
+            }
+
+            // The clear button sits beside the field, never over it, so the
+            // text control keeps every click inside its own rect.
+            Rect clear = new Rect(
+                field.xMax + 4f,
+                rect.y + ((rect.height - 18f) / 2f),
+                18f,
+                18f);
+            if (Widgets.ButtonImage(clear, TexButton.CloseXSmall))
+            {
+                searchText = string.Empty;
+                filterDirty = true;
+                scrollPosition = Vector2.zero;
+                UnityEngine.GUI.FocusControl(null);
+            }
+            DrawText(
+                new Rect(
+                    clear.xMax + 8f,
+                    rect.y,
+                    Mathf.Max(0f, rect.xMax - clear.xMax - 8f),
+                    rect.height),
+                "CR_RowCount".Translate(VisibleRowCount),
+                TextAnchor.MiddleRight,
+                MutedColor);
+        }
+
+        private void DrawList(Rect rect)
+        {
+            int count = VisibleRowCount;
+            float rowHeight = ActiveRowHeight;
+            bool cargoHeader = section == ReadinessSection.Cargo && count > 0;
+            float headerHeight = cargoHeader
+                ? ReadinessLayout.ColumnHeaderHeight
+                : 0f;
+            float rowsHeight = count > 0
+                ? count * rowHeight
+                : ReadinessLayout.EmptyStateHeight;
+            bool scrolling = rowsHeight > rect.height - headerHeight + 0.5f;
+            float contentWidth = rect.width - (scrolling ? 16f : 0f);
+
+            if (cargoHeader)
+            {
+                DrawCargoHeader(new Rect(
+                    rect.x,
+                    rect.y,
+                    contentWidth,
+                    ReadinessLayout.ColumnHeaderHeight));
             }
 
             Rect outRect = new Rect(
                 rect.x,
-                rect.y + 34f,
+                rect.y + headerHeight,
                 rect.width,
-                rect.height - 34f);
-            Rect viewRect = new Rect(
-                0f,
-                0f,
-                outRect.width - 16f,
-                Math.Max(outRect.height, scrollHeight));
+                Mathf.Max(0f, rect.height - headerHeight));
+            Rect viewRect = new Rect(0f, 0f, contentWidth, rowsHeight);
             Widgets.BeginScrollView(outRect, ref scrollPosition, viewRect);
+            if (count == 0)
+            {
+                DrawCentered(
+                    new Rect(0f, 0f, contentWidth, ReadinessLayout.EmptyStateHeight),
+                    EmptyMessage(),
+                    IsAllClear ? ReadyColor : MutedColor);
+            }
+            else
+            {
+                DrawRows(contentWidth, rowHeight);
+            }
+            Widgets.EndScrollView();
+        }
+
+        private bool IsAllClear =>
+            section == ReadinessSection.Problems &&
+            string.IsNullOrWhiteSpace(searchText) &&
+            snapshot != null &&
+            snapshot.Problems.Count == 0;
+
+        private string EmptyMessage()
+        {
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                return "CR_NoSearchResults".Translate();
+            }
+            if (section == ReadinessSection.Problems)
+            {
+                return "CR_AllReady".Translate();
+            }
+            return "CR_SectionEmpty".Translate();
+        }
+
+        private void DrawRows(float width, float rowHeight)
+        {
             float y = 0f;
             switch (section)
             {
                 case ReadinessSection.Cargo:
-                    DrawCargo(viewRect.width, ref y);
+                {
+                    CargoColumnLayout columns =
+                        ReadinessLayout.ResolveCargoColumns(width);
+                    for (int index = 0; index < visibleCargo.Count; index++)
+                    {
+                        DrawCargoRow(
+                            new Rect(0f, y, width, rowHeight),
+                            visibleCargo[index],
+                            columns,
+                            index);
+                        y += rowHeight;
+                    }
                     break;
+                }
                 case ReadinessSection.People:
-                    DrawMembers(snapshot.People, viewRect.width, ref y);
-                    break;
                 case ReadinessSection.Animals:
-                    DrawMembers(snapshot.Animals, viewRect.width, ref y);
+                {
+                    MemberColumnLayout columns =
+                        ReadinessLayout.ResolveMemberColumns(width);
+                    for (int index = 0; index < visibleMembers.Count; index++)
+                    {
+                        DrawMemberRow(
+                            new Rect(0f, y, width, rowHeight),
+                            visibleMembers[index],
+                            columns,
+                            index);
+                        y += rowHeight;
+                    }
                     break;
+                }
                 default:
-                    DrawProblems(viewRect.width, ref y);
+                    for (int index = 0; index < visibleProblems.Count; index++)
+                    {
+                        DrawProblemRow(
+                            new Rect(0f, y, width, rowHeight),
+                            visibleProblems[index],
+                            index);
+                        y += rowHeight;
+                    }
                     break;
             }
-            scrollHeight = y + 4f;
-            Widgets.EndScrollView();
         }
 
-        private void DrawCargo(float width, ref float y)
+        private static void DrawCargoHeader(Rect rect)
         {
-            DrawCargoHeader(width, ref y);
-            IEnumerable<CargoReadinessRow> rows = snapshot.Cargo.Where(
-                row => MatchesSearch(row.Label));
-            bool any = false;
-            foreach (CargoReadinessRow row in rows)
-            {
-                any = true;
-                Rect rect = new Rect(0f, y, width, RowHeight);
-                DrawRowBackground(rect, row.Counts.Remaining > 0);
-                Rect icon = new Rect(rect.x + 2f, rect.y + 2f, 26f, 26f);
-                Widgets.ThingIcon(icon, row.Def);
-                DrawCell(new Rect(34f, y, width * ItemColumnEnd - 34f, RowHeight), row.Label);
-                DrawCell(new Rect(width * ItemColumnEnd, y,
-                    width * (LoadedColumnEnd - ItemColumnEnd), RowHeight),
-                    row.Counts.Loaded + " / " + row.Counts.Requested);
-                DrawCell(new Rect(width * LoadedColumnEnd, y,
-                    width * (CarriedColumnEnd - LoadedColumnEnd), RowHeight),
-                    row.Counts.Carried.ToString());
-                DrawCell(new Rect(width * CarriedColumnEnd, y,
-                    width * (ReservedColumnEnd - CarriedColumnEnd), RowHeight),
-                    row.Counts.Reserved.ToString());
-                DrawCell(new Rect(width * ReservedColumnEnd, y,
-                    width * (WaitingColumnEnd - ReservedColumnEnd), RowHeight),
-                    row.Counts.Waiting.ToString());
-                DrawCell(new Rect(width * WaitingColumnEnd, y,
-                    width * (1f - WaitingColumnEnd), RowHeight),
-                    ProblemCount(row).ToString());
-                TooltipHandler.TipRegion(rect, CargoTooltip(row));
-                HandleNavigation(rect, row.NavigationTarget);
-                y += RowHeight;
-            }
-            if (!any)
-            {
-                DrawEmpty(width, ref y);
-            }
-        }
-
-        private static void DrawCargoHeader(float width, ref float y)
-        {
-            GUI.color = Color.gray;
-            DrawCell(new Rect(34f, y, width * ItemColumnEnd - 34f, 24f), "CR_ColumnItem".Translate());
-            string loadedHeader = width < 760f
-                ? "CR_ColumnLoadedCompact".Translate()
-                : "CR_ColumnLoaded".Translate();
-            DrawCell(new Rect(width * ItemColumnEnd, y,
-                width * (LoadedColumnEnd - ItemColumnEnd), 24f), loadedHeader);
-            DrawCell(new Rect(width * LoadedColumnEnd, y,
-                width * (CarriedColumnEnd - LoadedColumnEnd), 24f), "CR_ColumnCarried".Translate());
-            DrawCell(new Rect(width * CarriedColumnEnd, y,
-                width * (ReservedColumnEnd - CarriedColumnEnd), 24f), "CR_ColumnReserved".Translate());
-            DrawCell(new Rect(width * ReservedColumnEnd, y,
-                width * (WaitingColumnEnd - ReservedColumnEnd), 24f), "CR_ColumnWaiting".Translate());
-            DrawCell(new Rect(width * WaitingColumnEnd, y,
-                width * (1f - WaitingColumnEnd), 24f), "CR_ColumnProblems".Translate());
+            CargoColumnLayout columns =
+                ReadinessLayout.ResolveCargoColumns(rect.width);
+            DrawText(
+                new Rect(
+                    rect.x + CellPadding,
+                    rect.y,
+                    columns.LabelWidth,
+                    rect.height),
+                "CR_ColumnItem".Translate(),
+                TextAnchor.MiddleLeft,
+                MutedColor);
+            DrawCargoColumns(
+                rect,
+                columns,
+                "CR_ColumnLoadedShort".Translate(),
+                MutedColor,
+                "CR_ColumnCarried".Translate(),
+                "CR_ColumnReserved".Translate(),
+                "CR_ColumnWaiting".Translate(),
+                "CR_ColumnProblems".Translate(),
+                MutedColor);
+            TooltipHandler.TipRegion(rect, "CR_ColumnsTooltip".Translate());
+            GUI.color = new Color(1f, 1f, 1f, 0.2f);
+            Widgets.DrawLineHorizontal(rect.x, rect.yMax - 1f, rect.width);
             GUI.color = Color.white;
-            y += 26f;
         }
 
-        private void DrawMembers(
-            List<MemberReadinessRow> rows,
+        private void DrawCargoRow(
+            Rect rect,
+            CargoReadinessRow row,
+            CargoColumnLayout columns,
+            int index)
+        {
+            DrawRowBackground(rect, index);
+            int problems = ProblemCount(row);
+            if (problems > 0)
+            {
+                DrawAccent(
+                    rect,
+                    row.Counts.Unavailable > 0 ||
+                    row.Counts.Inaccessible > 0 ||
+                    row.HasBurning
+                        ? BlockingColor
+                        : WarningColor);
+            }
+
+            Rect icon = new Rect(
+                rect.x + CellPadding,
+                rect.y + ((rect.height - IconSize) / 2f),
+                IconSize,
+                IconSize);
+            if (row.Def != null)
+            {
+                Widgets.ThingIcon(icon, row.Def);
+            }
+            float labelStart = icon.xMax + 6f;
+            DrawText(
+                new Rect(
+                    labelStart,
+                    rect.y,
+                    Mathf.Max(
+                        0f,
+                        rect.x + columns.LabelWidth - CellPadding - labelStart),
+                    rect.height),
+                row.Label,
+                TextAnchor.MiddleLeft,
+                Color.white);
+
+            bool complete = row.Counts.Remaining <= 0;
+            DrawCargoColumns(
+                rect,
+                columns,
+                row.Counts.Loaded + " / " + row.Counts.Requested,
+                complete ? ReadyColor : Color.white,
+                row.Counts.Carried.ToString(),
+                row.Counts.Reserved.ToString(),
+                row.Counts.Waiting.ToString(),
+                problems > 0 ? problems.ToString() : "-",
+                problems > 0 ? WarningColor : MutedColor);
+
+            TooltipHandler.TipRegion(rect, CargoTooltip(row));
+            HandleNavigation(rect, row.NavigationTarget);
+        }
+
+        /// <summary>
+        /// Shared numeric block for the cargo header and the cargo rows so the
+        /// two always collapse to the same columns at the same width.
+        /// </summary>
+        private static void DrawCargoColumns(
+            Rect rect,
+            CargoColumnLayout columns,
+            string loaded,
+            Color loadedColor,
+            string carried,
+            string reserved,
+            string waiting,
+            string problems,
+            Color problemsColor)
+        {
+            float x = rect.xMax - columns.NumericWidth;
+            DrawNumeric(
+                rect,
+                ref x,
+                ReadinessLayout.LoadedColumnWidth,
+                loaded,
+                loadedColor);
+            if (columns.ShowCarried)
+            {
+                DrawNumeric(
+                    rect,
+                    ref x,
+                    ReadinessLayout.NumericColumnWidth,
+                    carried,
+                    MutedColor);
+            }
+            if (columns.ShowReserved)
+            {
+                DrawNumeric(
+                    rect,
+                    ref x,
+                    ReadinessLayout.NumericColumnWidth,
+                    reserved,
+                    MutedColor);
+            }
+            if (columns.ShowWaiting)
+            {
+                DrawNumeric(
+                    rect,
+                    ref x,
+                    ReadinessLayout.NumericColumnWidth,
+                    waiting,
+                    MutedColor);
+            }
+            if (columns.ShowProblems)
+            {
+                DrawNumeric(
+                    rect,
+                    ref x,
+                    ReadinessLayout.NumericColumnWidth,
+                    problems,
+                    problemsColor);
+            }
+        }
+
+        private static void DrawNumeric(
+            Rect rect,
+            ref float x,
             float width,
-            ref float y)
+            string text,
+            Color color)
         {
-            bool any = false;
-            foreach (MemberReadinessRow row in rows.Where(item =>
-                MatchesSearch(item.Pawn.LabelShort) || MatchesSearch(item.Status)))
-            {
-                any = true;
-                Rect rect = new Rect(0f, y, width, RowHeight);
-                DrawRowBackground(rect, !row.Ready);
-                Widgets.ThingIcon(new Rect(2f, y + 2f, 26f, 26f), row.Pawn);
-                DrawCell(new Rect(34f, y, width * 0.40f - 34f, RowHeight), row.Pawn.LabelShortCap);
-                DrawCell(new Rect(width * 0.40f, y, width * 0.25f, RowHeight), row.Status);
-                DrawCell(new Rect(width * 0.65f, y, width * 0.35f, RowHeight), row.Detail);
-                TooltipHandler.TipRegion(rect, row.Detail);
-                HandleNavigation(rect, row.Pawn);
-                y += RowHeight;
-            }
-            if (!any)
-            {
-                DrawEmpty(width, ref y);
-            }
+            DrawText(
+                new Rect(x, rect.y, width - CellPadding, rect.height),
+                text,
+                TextAnchor.MiddleRight,
+                color);
+            x += width;
         }
 
-        private void DrawProblems(float width, ref float y)
+        private void DrawMemberRow(
+            Rect rect,
+            MemberReadinessRow row,
+            MemberColumnLayout columns,
+            int index)
         {
-            bool any = false;
-            foreach (ProblemReadinessRow row in snapshot.Problems.Where(item =>
-                MatchesSearch(item.Label) || MatchesSearch(item.Detail)))
+            DrawRowBackground(rect, index);
+            Color statusColor = row.Ready
+                ? ReadyColor
+                : row.IsBlocking ? BlockingColor : WarningColor;
+            if (!row.Ready)
             {
-                any = true;
-                Rect rect = new Rect(0f, y, width, RowHeight + 8f);
-                DrawRowBackground(rect, row.Severity != ReadinessSeverity.Information);
-                Widgets.DrawBoxSolid(
-                    new Rect(4f, y + 10f, 10f, 10f),
-                    SeverityColor(row.Severity));
-                DrawCell(new Rect(22f, y, width * 0.38f - 22f, rect.height), row.Label);
-                DrawCell(new Rect(width * 0.38f, y, width * 0.62f, rect.height), row.Detail);
-                TooltipHandler.TipRegion(rect, row.Detail);
-                HandleNavigation(rect, row.NavigationTarget);
-                y += rect.height;
+                DrawAccent(rect, statusColor);
             }
-            if (!any)
+
+            Rect icon = new Rect(
+                rect.x + CellPadding,
+                rect.y + ((rect.height - IconSize) / 2f),
+                IconSize,
+                IconSize);
+            if (row.Pawn != null)
             {
-                string message = snapshot.Problems.Count == 0
-                    ? "CR_AllReady".Translate()
-                    : "CR_NoSearchResults".Translate();
-                Text.Anchor = TextAnchor.MiddleCenter;
-                GUI.color = Color.gray;
-                Widgets.Label(new Rect(0f, y, width, 60f), message);
-                GUI.color = Color.white;
-                Text.Anchor = TextAnchor.UpperLeft;
-                y += 60f;
+                Widgets.ThingIcon(icon, row.Pawn);
             }
+            float labelStart = icon.xMax + 6f;
+            DrawText(
+                new Rect(
+                    labelStart,
+                    rect.y,
+                    Mathf.Max(
+                        0f,
+                        rect.x + columns.NameWidth - CellPadding - labelStart),
+                    rect.height),
+                row.Pawn?.LabelShortCap,
+                TextAnchor.MiddleLeft,
+                Color.white);
+
+            float x = rect.xMax - columns.StatusWidth - columns.DetailWidth;
+            DrawText(
+                new Rect(x, rect.y, columns.StatusWidth - CellPadding, rect.height),
+                row.Status,
+                TextAnchor.MiddleLeft,
+                statusColor);
+            if (columns.ShowDetail)
+            {
+                DrawText(
+                    new Rect(
+                        x + columns.StatusWidth,
+                        rect.y,
+                        columns.DetailWidth - CellPadding,
+                        rect.height),
+                    row.Detail,
+                    TextAnchor.MiddleLeft,
+                    MutedColor);
+            }
+
+            TooltipHandler.TipRegion(rect, row.Detail);
+            HandleNavigation(rect, row.Pawn);
+        }
+
+        private void DrawProblemRow(Rect rect, ProblemReadinessRow row, int index)
+        {
+            DrawRowBackground(rect, index);
+            Color severity = SeverityColor(row.Severity);
+            DrawAccent(rect, severity);
+
+            float labelWidth = Mathf.Clamp(rect.width * 0.4f, 120f, 300f);
+            DrawText(
+                new Rect(
+                    rect.x + CellPadding + AccentWidth,
+                    rect.y,
+                    labelWidth - CellPadding,
+                    rect.height),
+                row.Label,
+                TextAnchor.MiddleLeft,
+                severity);
+            float detailStart = rect.x + AccentWidth + CellPadding + labelWidth;
+            DrawText(
+                new Rect(
+                    detailStart,
+                    rect.y,
+                    Mathf.Max(0f, rect.xMax - detailStart - CellPadding),
+                    rect.height),
+                row.Detail,
+                TextAnchor.MiddleLeft,
+                MutedColor);
+
+            TooltipHandler.TipRegion(rect, row.Detail);
+            HandleNavigation(rect, row.NavigationTarget);
         }
 
         private bool MatchesSearch(string value)
@@ -408,24 +876,47 @@ namespace CaravanReadiness.UI
                        StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
-        private static void DrawRowBackground(Rect rect, bool warning)
+        private static void DrawRowBackground(Rect rect, int index)
         {
-            if (Mouse.IsOver(rect))
+            if (index % 2 == 1)
             {
-                Widgets.DrawHighlight(rect);
+                Widgets.DrawAltRect(rect);
             }
-            else if (warning)
-            {
-                Widgets.DrawLightHighlight(rect);
-            }
+            Widgets.DrawHighlightIfMouseover(rect);
         }
 
-        private static void DrawCell(Rect rect, string text)
+        private static void DrawAccent(Rect rect, Color color)
         {
-            Text.Anchor = TextAnchor.MiddleLeft;
+            Widgets.DrawBoxSolid(
+                new Rect(rect.x, rect.y + 3f, AccentWidth, rect.height - 6f),
+                color);
+        }
+
+        private static void DrawText(
+            Rect rect,
+            string text,
+            TextAnchor anchor,
+            Color color,
+            GameFont font = GameFont.Small)
+        {
+            GameFont previousFont = Text.Font;
+            Text.Font = font;
+            Text.Anchor = anchor;
             Text.WordWrap = false;
+            GUI.color = color;
             Widgets.Label(rect, (text ?? string.Empty).Truncate(rect.width));
+            GUI.color = Color.white;
             Text.WordWrap = true;
+            Text.Anchor = TextAnchor.UpperLeft;
+            Text.Font = previousFont;
+        }
+
+        private static void DrawCentered(Rect rect, string text, Color color)
+        {
+            Text.Anchor = TextAnchor.MiddleCenter;
+            GUI.color = color;
+            Widgets.Label(rect.ContractedBy(CellPadding, 0f), text);
+            GUI.color = Color.white;
             Text.Anchor = TextAnchor.UpperLeft;
         }
 
@@ -478,24 +969,12 @@ namespace CaravanReadiness.UI
             switch (severity)
             {
                 case ReadinessSeverity.Blocking:
-                    return new Color(0.85f, 0.28f, 0.22f);
+                    return BlockingColor;
                 case ReadinessSeverity.Warning:
-                    return new Color(0.95f, 0.68f, 0.20f);
+                    return WarningColor;
                 default:
-                    return new Color(0.35f, 0.65f, 0.90f);
+                    return InformationColor;
             }
-        }
-
-        private static void DrawEmpty(float width, ref float y)
-        {
-            Text.Anchor = TextAnchor.MiddleCenter;
-            GUI.color = Color.gray;
-            Widgets.Label(
-                new Rect(0f, y, width, 60f),
-                "CR_NoSearchResults".Translate());
-            GUI.color = Color.white;
-            Text.Anchor = TextAnchor.UpperLeft;
-            y += 60f;
         }
     }
 }
