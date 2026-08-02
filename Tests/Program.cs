@@ -34,6 +34,8 @@ namespace CaravanReadiness.Tests
             DenseContentStopsAtTheWindowCeiling();
             SmallScreensNeverExceedTheirBounds();
             EmptyListStillReservesItsPlaceholder();
+            ProgressValuesClampAtEveryBoundary();
+            ProgressLabelOutlineFitsInsideTheBar();
 
             Console.WriteLine($"PASS: {assertions} Caravan Readiness assertions");
             return 0;
@@ -342,6 +344,48 @@ namespace CaravanReadiness.Tests
                 ReadinessLayout.EmptyStateHeight,
                 ReadinessLayout.ListHeight(0, ReadinessLayout.RowHeight, true),
                 "an empty view reserves only its placeholder");
+        }
+
+        private static void ProgressValuesClampAtEveryBoundary()
+        {
+            Equal(0f, ReadinessLayout.ClampProgress(-0.2f),
+                "negative progress clamps to empty");
+            Equal(0f, ReadinessLayout.ClampProgress(0f),
+                "empty progress stays empty");
+            Equal(0.01f, ReadinessLayout.ClampProgress(0.01f),
+                "near-empty progress is preserved");
+            Equal(0.5f, ReadinessLayout.ClampProgress(0.5f),
+                "half progress is preserved");
+            Equal(0.99f, ReadinessLayout.ClampProgress(0.99f),
+                "near-full progress is preserved");
+            Equal(1f, ReadinessLayout.ClampProgress(1f),
+                "full progress stays full");
+            Equal(1f, ReadinessLayout.ClampProgress(1.2f),
+                "overflow progress clamps to full");
+        }
+
+        private static void ProgressLabelOutlineFitsInsideTheBar()
+        {
+            ProgressLabelLayout normal =
+                ReadinessLayout.ResolveProgressLabel(720f, 20f);
+            Equal(2f, normal.X, "progress label left inset");
+            Equal(2f, normal.Y, "progress label top inset");
+            Equal(716f, normal.Width, "progress label usable width");
+            Equal(16f, normal.Height, "progress label usable height");
+            Equal(1f, normal.OutlineOffset, "progress label outline width");
+            True(
+                normal.X >= normal.OutlineOffset &&
+                normal.Y >= normal.OutlineOffset,
+                "progress outline stays inside the top and left edges");
+            True(
+                normal.X + normal.Width + normal.OutlineOffset <= 720f &&
+                normal.Y + normal.Height + normal.OutlineOffset <= 20f,
+                "progress outline stays inside the bottom and right edges");
+
+            ProgressLabelLayout tiny =
+                ReadinessLayout.ResolveProgressLabel(2f, 2f);
+            Equal(0f, tiny.Width, "tiny progress bar has no negative width");
+            Equal(0f, tiny.Height, "tiny progress bar has no negative height");
         }
 
         private static void True(bool condition, string scenario)

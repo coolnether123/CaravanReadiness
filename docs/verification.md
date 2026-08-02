@@ -4,12 +4,19 @@ Date: 2026-08-01. RimWorld: 1.6.4871 rev574. The exact redesigned assembly hash 
 
 Portable provenance, raw-log hashes, active mods, and the exact release allowlist are recorded in [`Engineering/evidence.json`](../Engineering/evidence.json). Curated, path-free runtime lines are preserved under [`docs/evidence`](evidence/); the raw harness logs remain external and are identified by hash rather than copied with machine-specific paths.
 
+## Progress-label contrast correction — 2026-08-02
+
+- The loaded/goal label is now rendered after the fill with a one-pixel four-sided dark outline and a two-pixel protected inset. Its glyphs remain distinguishable when the moving fill edge passes directly through the text.
+- Pure render-contract coverage exercises progress at empty, near-empty, 50%, near-full, full, and out-of-range values. It also proves the outline remains within a normal 720 × 20 bar and that tiny geometry never produces negative bounds.
+- The focused suite now reports `PASS: 81 Caravan Readiness assertions`; no prior expectation was changed.
+- Shared-tooling Release build succeeded. DLL SHA-256: `6B6E0765DCDBA40689006A14A5B45333FF83BD077ACB3BF2A2355A66EEDBA02F`.
+
 ## Loaded-cargo accounting correction — 2026-08-02
 
 - The release-blocker reproduction was traced to `CargoInventoryCounter`: it treated `Pawn_InventoryTracker.UnloadEverything` as though it proved every item in the pawn inventory was unrelated to the active caravan. Vanilla uses that flag as delayed cancellation cleanup, and it can still be set when the next formation transfers a selected stack into the same pawn inventory.
 - The counter now keeps the transferable group's existing `TransferAsOne` membership check and no longer discards that whole inventory. This preserves the authoritative `40 requested / 7 loaded / 33 remaining` Steel transition after the carry tracker transfers the stack into a caravan member inventory.
 - Focused automated verification passed: `dotnet run --project Tests\\Mod.Tests.csproj -c Release` reported `PASS: 65 Caravan Readiness assertions`, including the new carry-to-inventory regression. The unchanged debug action `Stage loaded cargo` remains the live assertion for the exact production transition.
-- A fresh 1.6 assembly was built by the shared RimWorld tooling with resolved Harmony and Spine dependencies. DLL SHA-256: `E55BCEA1F8027D5E9DF4E039879DE009E9EBAC133FE915C3463A5DC79CE18A2E`.
+- The cargo correction's intermediate 1.6 assembly was built by the shared RimWorld tooling with resolved Harmony and Spine dependencies. Its superseded DLL SHA-256 was `E55BCEA1F8027D5E9DF4E039879DE009E9EBAC133FE915C3463A5DC79CE18A2E`; the current hash is recorded above.
 - Live rerun is pending the concurrent harness mailbox repair. Two isolated lanes reached Entry and then their harness-owned startup commands remained queued; this is recorded as a harness boundary, not a Caravan Readiness pass.
 
 ## Automated and packaging checks

@@ -339,7 +339,7 @@ namespace CaravanReadiness.UI
         {
             float progress = snapshot.RequestedTotal <= 0
                 ? 1f
-                : Mathf.Clamp01(
+                : ReadinessLayout.ClampProgress(
                     (float)snapshot.LoadedTotal / snapshot.RequestedTotal);
             bool complete = snapshot.RequestedTotal <= 0 ||
                             snapshot.LoadedTotal >= snapshot.RequestedTotal;
@@ -370,15 +370,13 @@ namespace CaravanReadiness.UI
                 complete ? BarReadyTex : BarProgressTex,
                 BarBackgroundTex,
                 true);
-            DrawText(
+            DrawProgressLabel(
                 barRect,
                 snapshot.RequestedTotal <= 0
                     ? "CR_ProgressNoCargo".Translate()
                     : "CR_ProgressBarLabel".Translate(
                         snapshot.LoadedTotal,
-                        snapshot.RequestedTotal),
-                TextAnchor.MiddleCenter,
-                Color.white);
+                        snapshot.RequestedTotal));
             TooltipHandler.TipRegion(
                 barRect,
                 "CR_ProgressSummary".Translate(
@@ -386,6 +384,47 @@ namespace CaravanReadiness.UI
                     snapshot.RequestedTotal,
                     snapshot.CarriedTotal,
                     snapshot.ReservedTotal));
+        }
+
+        private static void DrawProgressLabel(Rect barRect, string label)
+        {
+            ProgressLabelLayout layout =
+                ReadinessLayout.ResolveProgressLabel(
+                    barRect.width,
+                    barRect.height);
+            Rect textRect = new Rect(
+                barRect.x + layout.X,
+                barRect.y + layout.Y,
+                layout.Width,
+                layout.Height);
+            float offset = layout.OutlineOffset;
+            Color outline = new Color(0f, 0f, 0f, 0.92f);
+
+            DrawText(
+                new Rect(textRect.x - offset, textRect.y, textRect.width, textRect.height),
+                label,
+                TextAnchor.MiddleCenter,
+                outline);
+            DrawText(
+                new Rect(textRect.x + offset, textRect.y, textRect.width, textRect.height),
+                label,
+                TextAnchor.MiddleCenter,
+                outline);
+            DrawText(
+                new Rect(textRect.x, textRect.y - offset, textRect.width, textRect.height),
+                label,
+                TextAnchor.MiddleCenter,
+                outline);
+            DrawText(
+                new Rect(textRect.x, textRect.y + offset, textRect.width, textRect.height),
+                label,
+                TextAnchor.MiddleCenter,
+                outline);
+            DrawText(
+                textRect,
+                label,
+                TextAnchor.MiddleCenter,
+                Color.white);
         }
 
         private void ShowFormationMenu(List<Lord> formations)

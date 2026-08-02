@@ -67,6 +67,33 @@ namespace CaravanReadiness.UI
         internal bool ShowDetail => DetailWidth > 0f;
     }
 
+    internal readonly struct ProgressLabelLayout
+    {
+        internal ProgressLabelLayout(
+            float x,
+            float y,
+            float width,
+            float height,
+            float outlineOffset)
+        {
+            X = x;
+            Y = y;
+            Width = width;
+            Height = height;
+            OutlineOffset = outlineOffset;
+        }
+
+        internal float X { get; }
+
+        internal float Y { get; }
+
+        internal float Width { get; }
+
+        internal float Height { get; }
+
+        internal float OutlineOffset { get; }
+    }
+
     /// <summary>
     /// Verse-free geometry for the readiness window. Keeping the adaptive
     /// sizing rules here lets the isolated test suite exercise the column
@@ -96,6 +123,32 @@ namespace CaravanReadiness.UI
         internal const float MinimumWindowHeight = 290f;
         internal const float PreferredWindowWidth = 760f;
         internal const float MaximumWindowHeight = 720f;
+
+        internal const float ProgressLabelInset = 2f;
+        internal const float ProgressLabelOutline = 1f;
+
+        internal static float ClampProgress(float progress)
+        {
+            if (progress < 0f)
+            {
+                return 0f;
+            }
+            return progress > 1f ? 1f : progress;
+        }
+
+        internal static ProgressLabelLayout ResolveProgressLabel(
+            float barWidth,
+            float barHeight)
+        {
+            float width = Math.Max(0f, barWidth - (ProgressLabelInset * 2f));
+            float height = Math.Max(0f, barHeight - (ProgressLabelInset * 2f));
+            return new ProgressLabelLayout(
+                ProgressLabelInset,
+                ProgressLabelInset,
+                width,
+                height,
+                ProgressLabelOutline);
+        }
 
         internal static CargoColumnLayout ResolveCargoColumns(float contentWidth)
         {
