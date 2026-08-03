@@ -89,3 +89,11 @@ All game processes stopped without forced termination and their lanes were relea
 ## Compatibility not claimed
 
 Vehicle Framework, transport-pod workflows, Caravan Formation Improvements, and DLC combinations beyond Core plus Biotech were researched but not pair-tested. They remain explicitly unverified.
+## Final release-candidate gate — 2026-08-03
+
+Passed 25 contracts (81 assertions), clean build, and package checks. A real
+formation fixture verified requested, carried, loaded, reserved, and waiting
+cargo state. The minimum-size cargo window remained readable at partial and
+complete progress; its centered `loaded` text stayed clear of the filled bar.
+All fixture windows and the SOS2 fixture coexisted with the other seven gameplay
+mods.

@@ -25,7 +25,7 @@
   </loadAfter>
   <description>Caravan Readiness adds a live readiness report to the caravan hitching spot used by a forming vanilla caravan.
 
-See requested, loaded, carried, reserved, waiting, inaccessible, blocked, and unavailable cargo quantities. Review people, animals, and concrete departure blockers, then click a row to jump to the relevant pawn or item.
+Its compact progress summary stays readable as the caravan fills. Review requested, loaded, carried, reserved, waiting, inaccessible, blocked, and unavailable cargo; check people, animals, and departure blockers; then click a row to jump to the relevant pawn or item.
 
 The mod does not create a second staging system, change caravan jobs, or force departure. It observes the existing vanilla formation process and updates on a bounded cadence.</description>
 </ModMetaData>

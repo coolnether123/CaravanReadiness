@@ -2,13 +2,24 @@
 
 Caravan Readiness adds an observational readiness report to RimWorld's existing caravan hitching spot. It does not replace caravan formation, create haul jobs, change reservations, or force departure.
 
-When a vanilla caravan is forming, select its hitching spot and open **Caravan readiness**. The report groups cargo, people, animals, and problems. Cargo rows reconcile requested, loaded, carried, reserved, waiting, inaccessible, blocked, and unavailable quantities. Rows with a known target can be clicked to jump to the relevant pawn or item.
+When a vanilla caravan is forming, select its hitching spot and open **Caravan
+readiness**. A compact summary and progress bar stay readable as the caravan
+fills, while the detailed report groups cargo, people, animals, and problems.
+Cargo rows reconcile requested, loaded, carried, reserved, waiting,
+inaccessible, blocked, and unavailable quantities. Rows with a known target
+can be clicked to jump to the relevant pawn or item.
 
 ## Requirements
 
 - RimWorld 1.6
 - Harmony
 - Spine 1.0
+
+## Installation
+
+Install Harmony and Spine, copy Caravan Readiness into RimWorld's `Mods`
+directory, then enable Harmony, Spine, and Caravan Readiness. It adds no
+save-persistent world objects, jobs, or replacement staging system.
 
 ## Design boundaries
 
