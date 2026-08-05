@@ -13,7 +13,8 @@
     "1.6/Assemblies/CaravanReadiness.dll",
     "Languages",
     "Patches",
-    "LICENSE"
+    "LICENSE",
+    "README.md"
   ],
   "dependencies": [
     "harmony",
