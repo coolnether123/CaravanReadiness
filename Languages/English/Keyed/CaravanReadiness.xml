@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <CR_CommandLabel>Caravan readiness</CR_CommandLabel>
   <CR_CommandDescription>Review the cargo, members, animals, and problems for the caravan forming at this hitching spot.</CR_CommandDescription>
@@ -18,7 +18,6 @@
   <CR_SearchHint>Search this view...</CR_SearchHint>
   <CR_RowCount>{0} shown</CR_RowCount>
   <CR_ColumnItem>Item</CR_ColumnItem>
-  <CR_ColumnLoaded>Loaded / requested</CR_ColumnLoaded>
   <CR_ColumnLoadedShort>Loaded</CR_ColumnLoadedShort>
   <CR_ColumnCarried>Carried</CR_ColumnCarried>
   <CR_ColumnReserved>Reserved</CR_ColumnReserved>
