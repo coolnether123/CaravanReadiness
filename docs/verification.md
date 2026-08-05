@@ -64,14 +64,18 @@ The generalized harness created controlled colonies and invoked DevMode-only fix
 
 ## UI evidence
 
-- [Compact readiness view](screenshots/readiness-window-final-compact.png): the exact final DLL shrinks an all-clear Problems view to its content instead of leaving a large empty fixed-height window.
-- [Cargo view](screenshots/cargo-window-final.png): the exact final DLL shows the full Loaded, Carried, Reserved, Waiting, and Problems headings with alternating native rows and item icons.
-- [Narrow cargo view](screenshots/narrow-window-final-adaptive.png): at the 560 px width floor, the least useful diagnostic column collapses so every remaining heading and quantity stays legible.
+The referenced captures are development evidence and are no longer stored in
+this repository. They are archived outside it at
+`Archives/mod-evidence-20260805/CaravanReadiness/docs/screenshots/`, under the filenames below.
 
-- [Rightmost gizmo](screenshots/gizmo-rightmost-final.png): Deconstruct, Form caravan, and Build copy remain in vanilla order; Caravan readiness is the far-right command.
-- [Transfer identity after load](screenshots/transfer-identity-final.png): the surviving Simple meal remains `0 / 3`, the minified Steel shelf remains `0 / 1`, and the readiness command remains far right.
-- [Problems view](screenshots/problems-readiness-polished.png): concise blocking and warning rows with exact quantities.
-- [Packing spot after save/reload](screenshots/packing-spot-after-reload.png): component and save/reload smoke evidence.
+- **Compact readiness view** (`readiness-window-final-compact.png`): the exact final DLL shrinks an all-clear Problems view to its content instead of leaving a large empty fixed-height window.
+- **Cargo view** (`cargo-window-final.png`): the exact final DLL shows the full Loaded, Carried, Reserved, Waiting, and Problems headings with alternating native rows and item icons.
+- **Narrow cargo view** (`narrow-window-final-adaptive.png`): at the 560 px width floor, the least useful diagnostic column collapses so every remaining heading and quantity stays legible.
+
+- **Rightmost gizmo** (`gizmo-rightmost-final.png`): Deconstruct, Form caravan, and Build copy remain in vanilla order; Caravan readiness is the far-right command.
+- **Transfer identity after load** (`transfer-identity-final.png`): the surviving Simple meal remains `0 / 3`, the minified Steel shelf remains `0 / 1`, and the readiness command remains far right.
+- **Problems view** (`problems-readiness-polished.png`): concise blocking and warning rows with exact quantities.
+- **Packing spot after save/reload** (`packing-spot-after-reload.png`): component and save/reload smoke evidence.
 
 The harness opened every section, used real Unity-client pointer clicks to switch tabs, and the production navigation method selected the expected target.
 
