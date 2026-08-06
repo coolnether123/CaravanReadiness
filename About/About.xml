@@ -15,7 +15,7 @@
     </li>
     <li>
       <packageId>CoolNether123.Spine</packageId>
-      <displayName>Spine</displayName>
+      <displayName>SpineLib</displayName>
       <downloadUrl>https://github.com/coolnether123/Spine</downloadUrl>
     </li>
   </modDependencies>
@@ -30,5 +30,5 @@
 - Click a row to jump to that pawn or item
 - Reads the vanilla formation process and never forces departure
 
-Requires Harmony and Spine.</description>
+Requires Harmony and SpineLib.</description>
 </ModMetaData>

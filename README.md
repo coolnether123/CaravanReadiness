@@ -15,13 +15,13 @@ be clicked to jump to the relevant pawn or item.
 
 - RimWorld 1.6
 - [Harmony](https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077)
-- [Spine](https://github.com/coolnether123/Spine) — the shared runtime used by
+- [SpineLib](https://github.com/coolnether123/Spine) — the shared runtime used by
   CoolNether123 mods
 
 ## Installation
 
-Install Harmony and Spine, copy `CaravanReadiness` into RimWorld's `Mods`
-folder, then enable Harmony, Spine, and Caravan Readiness in that order.
+Install Harmony and SpineLib, copy `CaravanReadiness` into RimWorld's `Mods`
+folder, then enable Harmony, SpineLib, and Caravan Readiness in that order.
 
 Caravan Readiness adds no save-persistent world objects, jobs, or replacement
 staging system, so it is safe to add to or remove from an existing save.
@@ -75,6 +75,6 @@ verification; it is never part of the Caravan Readiness shipping package.
 
 ## License
 
-Released under the [MIT License](LICENSE). Harmony and Spine are used under
+Released under the [MIT License](LICENSE). Harmony and SpineLib are used under
 their own licenses. Existing caravan mods were consulted only for behavioral
 and compatibility research; no code was copied.
