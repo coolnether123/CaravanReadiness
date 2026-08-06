@@ -5,6 +5,10 @@ using Verse;
 
 namespace CaravanReadiness.State
 {
+    /// <summary>
+    /// Counts compatible cargo already held by caravan members while treating
+    /// vanilla transfer-group semantics as the ownership boundary.
+    /// </summary>
     internal static class CargoInventoryCounter
     {
         public static int Count(

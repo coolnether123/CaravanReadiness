@@ -10,6 +10,10 @@ using Verse.AI.Group;
 
 namespace CaravanReadiness.UI
 {
+    /// <summary>
+    /// Presents cached observational snapshots in a responsive native window,
+    /// keeping world scans and manifest reconciliation outside repaint logic.
+    /// </summary>
     [StaticConstructorOnStartup]
     public sealed class Dialog_CaravanReadiness : Window
     {
@@ -98,6 +102,8 @@ namespace CaravanReadiness.UI
 
         public override void WindowOnGUI()
         {
+            // Window performs layout from windowRect inside the base call, so
+            // content-driven sizing and screen clamping must happen first.
             ApplyAdaptiveHeight();
             ClampToScreen();
             base.WindowOnGUI();
@@ -229,6 +235,8 @@ namespace CaravanReadiness.UI
         private void RefreshIfNeeded()
         {
             int ticks = Find.TickManager?.TicksGame ?? 0;
+            // RimWorld may repaint the same window several times per frame;
+            // game ticks provide a stable throttle independent of GUI events.
             if (snapshot != null && snapshot.IsStillActive && ticks < nextRefreshTick)
             {
                 return;
@@ -370,6 +378,8 @@ namespace CaravanReadiness.UI
                 complete ? BarReadyTex : BarProgressTex,
                 BarBackgroundTex,
                 true);
+            // Draw after both fill textures so the moving edge cannot overwrite
+            // part of the centered progress text.
             DrawProgressLabel(
                 barRect,
                 snapshot.RequestedTotal <= 0

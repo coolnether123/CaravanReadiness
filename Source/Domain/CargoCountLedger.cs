@@ -2,6 +2,10 @@ using System;
 
 namespace CaravanReadiness.Domain
 {
+    /// <summary>
+    /// Reconciles mutually exclusive cargo quantities so the observational UI
+    /// cannot count one stack in more than one readiness category.
+    /// </summary>
     public readonly struct CargoCountLedger
     {
         public CargoCountLedger(
@@ -83,4 +87,3 @@ namespace CaravanReadiness.Domain
         }
     }
 }
-

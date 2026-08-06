@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace CaravanReadiness.Domain
 {
+    /// <summary>
+    /// Maps current transfer groups back to persisted manifest slots so row
+    /// history survives vanilla reorder, insertion, and removal operations.
+    /// </summary>
     public static class ManifestSlotReconciler
     {
         public const int NewSlot = -1;

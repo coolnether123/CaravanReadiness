@@ -9,6 +9,10 @@ using Verse.AI.Group;
 
 namespace CaravanReadiness.State
 {
+    /// <summary>
+    /// Resolves player caravan lords for a packing spot through vanilla's
+    /// private meeting point while returning a deterministic formation order.
+    /// </summary>
     internal static class FormationLocator
     {
         private static readonly AccessTools.FieldRef<

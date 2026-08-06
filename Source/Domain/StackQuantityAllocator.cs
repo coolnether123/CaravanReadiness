@@ -2,6 +2,10 @@ using System;
 
 namespace CaravanReadiness.Domain
 {
+    /// <summary>
+    /// Bounds per-stack classification so overlapping reservations and hazards
+    /// cannot account for more units than the stack actually contains.
+    /// </summary>
     public static class StackQuantityAllocator
     {
         public static int Allocate(

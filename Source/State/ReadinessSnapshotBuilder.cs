@@ -10,6 +10,10 @@ using Verse.AI.Group;
 
 namespace CaravanReadiness.State
 {
+    /// <summary>
+    /// Projects live formation, inventory, job, reservation, and reachability
+    /// state into an immutable-per-refresh report without mutating vanilla.
+    /// </summary>
     internal static class ReadinessSnapshotBuilder
     {
         public static FormationReadinessSnapshot Build(Lord lord)
@@ -174,6 +178,9 @@ namespace CaravanReadiness.State
             Dictionary<Thing, int> classifiedQuantities =
                 new Dictionary<Thing, int>();
 
+            // Classification follows vanilla progress: cargo already in hand
+            // wins over reservations, and only the unclaimed stack remainder
+            // is evaluated for reachability. This prevents double counting.
             foreach (Pawn pawn in lord.Map.mapPawns.AllPawnsSpawned)
             {
                 if (pawn?.CurJob?.lord != lord ||
@@ -360,6 +367,9 @@ namespace CaravanReadiness.State
             Lord lord,
             LordJob_FormAndSendCaravan job)
         {
+            // Vanilla changes the meaningful destination once the formation
+            // enters its leave toil; proximity to the packing spot is no longer
+            // evidence that a member is ready at that stage.
             IntVec3 target = lord.CurLordToil is LordToil_PrepareCaravan_Leave
                 ? job.ExitSpot
                 : snapshot.MeetingPoint;

@@ -8,6 +8,10 @@ using CaravanReadiness.State;
 
 namespace CaravanReadiness.UI
 {
+    /// <summary>
+    /// Attaches the observational readiness component to vanilla caravan
+    /// packing spots without introducing a replacement building definition.
+    /// </summary>
     public sealed class CompProperties_CaravanReadiness : CompProperties
     {
         public CompProperties_CaravanReadiness()
@@ -16,6 +20,10 @@ namespace CaravanReadiness.UI
         }
     }
 
+    /// <summary>
+    /// Adds a rightmost readiness command only when the selected packing spot
+    /// currently owns an active player caravan formation.
+    /// </summary>
     public sealed class CompCaravanReadiness : ThingComp
     {
         public override IEnumerable<Gizmo> CompGetGizmosExtra()

@@ -8,6 +8,10 @@ using Verse.AI.Group;
 
 namespace CaravanReadiness.State
 {
+    /// <summary>
+    /// Persists parallel observations for one vanilla formation so unavailable
+    /// or reordered transfer rows retain their original request history.
+    /// </summary>
     public sealed class FormationBaselineRecord : IExposable
     {
         public int LordLoadId;
@@ -39,6 +43,10 @@ namespace CaravanReadiness.State
         }
     }
 
+    /// <summary>
+    /// Owns map-scoped manifest baselines and reconciles them against vanilla
+    /// lords without introducing a second caravan formation state machine.
+    /// </summary>
     public sealed class FormationBaselineComponent : MapComponent
     {
         private List<FormationBaselineRecord> records =
@@ -121,6 +129,9 @@ namespace CaravanReadiness.State
             int[] matches = ManifestSlotReconciler.Match(
                 record.TransferGroupKeys,
                 currentKeys);
+            // Signatures can legitimately collide for transfer groups that
+            // vanilla still keeps separate, so live representatives refine the
+            // structural match before all parallel lists are rebuilt.
             RefineMatchesWithRepresentatives(
                 record.TransferGroupRepresentatives,
                 currentRepresentatives,
@@ -253,6 +264,9 @@ namespace CaravanReadiness.State
                 return;
             }
 
+            // Saves from before stable group identity existed have only
+            // positional history. Seed identities from the current vanilla
+            // order once so later refreshes can use structural reconciliation.
             record.TransferGroupKeys = new List<string>(slotCount);
             record.TransferGroupRepresentatives = new List<Thing>(slotCount);
             for (int index = 0; index < slotCount; index++)

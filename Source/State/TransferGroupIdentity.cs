@@ -6,6 +6,10 @@ using Verse;
 
 namespace CaravanReadiness.State
 {
+    /// <summary>
+    /// Reproduces the grouping dimensions relevant to caravan transfer rows so
+    /// visually similar items cannot exchange persisted manifest history.
+    /// </summary>
     internal static class TransferGroupIdentity
     {
         internal static string SignatureFor(TransferableOneWay transferable)

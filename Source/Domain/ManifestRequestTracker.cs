@@ -2,6 +2,10 @@ using System;
 
 namespace CaravanReadiness.Domain
 {
+    /// <summary>
+    /// Infers the authoritative request total from successive vanilla
+    /// remaining and inventory observations without replacing vanilla state.
+    /// </summary>
     public static class ManifestRequestTracker
     {
         public static int Observe(

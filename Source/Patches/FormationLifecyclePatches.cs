@@ -10,6 +10,10 @@ using Spine.Harmony;
 
 namespace CaravanReadiness.Patches
 {
+    /// <summary>
+    /// Observes vanilla formation creation and removal to keep persisted
+    /// baselines aligned without taking ownership of caravan lifecycle.
+    /// </summary>
     internal static class FormationLifecyclePatches
     {
         private const string HarmonyId = "CoolNether123.CaravanReadiness";

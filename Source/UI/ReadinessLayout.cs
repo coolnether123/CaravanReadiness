@@ -67,6 +67,10 @@ namespace CaravanReadiness.UI
         internal bool ShowDetail => DetailWidth > 0f;
     }
 
+    /// <summary>
+    /// Defines a protected inset for the progress label and its contrast
+    /// outline so the moving fill edge cannot obscure glyphs.
+    /// </summary>
     internal readonly struct ProgressLabelLayout
     {
         internal ProgressLabelLayout(

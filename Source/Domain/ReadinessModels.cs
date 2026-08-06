@@ -6,6 +6,10 @@ using Verse.AI.Group;
 
 namespace CaravanReadiness.Domain
 {
+    /// <summary>
+    /// Identifies the report views independently of their translated labels
+    /// so selection and filtering remain stable across languages.
+    /// </summary>
     public enum ReadinessSection
     {
         Cargo,
@@ -14,6 +18,10 @@ namespace CaravanReadiness.Domain
         Problems
     }
 
+    /// <summary>
+    /// Distinguishes informational findings from warnings and conditions that
+    /// prevent the caravan from being ready.
+    /// </summary>
     public enum ReadinessSeverity
     {
         Information,
@@ -21,6 +29,10 @@ namespace CaravanReadiness.Domain
         Blocking
     }
 
+    /// <summary>
+    /// Carries one transfer group's reconciled state and optional navigation
+    /// target from snapshot construction to the report UI.
+    /// </summary>
     public sealed class CargoReadinessRow
     {
         public ThingDef Def;
@@ -31,6 +43,10 @@ namespace CaravanReadiness.Domain
         public bool HasBurning;
     }
 
+    /// <summary>
+    /// Presents a caravan member's readiness without exposing mutable pawn
+    /// evaluation details to the drawing layer.
+    /// </summary>
     public sealed class MemberReadinessRow
     {
         public Pawn Pawn;
@@ -40,6 +56,10 @@ namespace CaravanReadiness.Domain
         public bool IsBlocking;
     }
 
+    /// <summary>
+    /// Normalizes cargo and member impediments into one severity-aware problems
+    /// view with optional world navigation.
+    /// </summary>
     public sealed class ProblemReadinessRow
     {
         public string Label;
@@ -48,6 +68,10 @@ namespace CaravanReadiness.Domain
         public Thing NavigationTarget;
     }
 
+    /// <summary>
+    /// Freezes one formation's observed state for a UI refresh interval so
+    /// repaint events never trigger repeated world scans.
+    /// </summary>
     public sealed class FormationReadinessSnapshot
     {
         public Lord Lord;

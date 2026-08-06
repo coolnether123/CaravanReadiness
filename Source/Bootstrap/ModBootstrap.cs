@@ -4,6 +4,10 @@ using Verse;
 
 namespace CaravanReadiness.Bootstrap
 {
+    /// <summary>
+    /// Acquires the shared runtime capabilities needed by this settings-free
+    /// mod and keeps startup wiring out of caravan state and presentation.
+    /// </summary>
     public sealed class CaravanReadinessMod : Mod
     {
         private static System.IDisposable tooltipLease;
