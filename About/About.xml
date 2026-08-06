@@ -16,6 +16,7 @@
     <li>
       <packageId>CoolNether123.Spine</packageId>
       <displayName>SpineLib</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/3778463813</steamWorkshopUrl>
       <downloadUrl>https://github.com/coolnether123/Spine</downloadUrl>
     </li>
   </modDependencies>
