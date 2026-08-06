@@ -15,7 +15,7 @@ be clicked to jump to the relevant pawn or item.
 
 - RimWorld 1.6
 - [Harmony](https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077)
-- [SpineLib](https://github.com/coolnether123/Spine) — the shared runtime used by
+- [SpineLib](https://steamcommunity.com/sharedfiles/filedetails/?id=3778463813) — the shared runtime used by
   CoolNether123 mods
 
 ## Installation
