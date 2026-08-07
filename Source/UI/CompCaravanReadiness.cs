@@ -46,7 +46,9 @@ namespace CaravanReadiness.UI
                 defaultLabel = "CR_CommandLabel".Translate(),
                 defaultDesc = "CR_CommandDescription".Translate(),
                 icon = FormCaravanComp.FormCaravanCommand,
+#if CARAVAN_READINESS_HAS_COMMAND_ORDER
                 Order = float.MaxValue,
+#endif
                 action = OpenReadiness
             };
         }

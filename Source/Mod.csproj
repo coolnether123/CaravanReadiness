@@ -5,9 +5,21 @@
     <AssemblyName>CaravanReadiness</AssemblyName>
     <RootNamespace>CaravanReadiness</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <OutputPath>..\1.6\Assemblies\</OutputPath>
+    <Configurations>1.6;1.5;1.4;1.3;1.2;1.1</Configurations>
+    <DisableImplicitConfigurationDefines>true</DisableImplicitConfigurationDefines>
+    <OutputPath>..\$(Configuration)\Assemblies\</OutputPath>
     <RwtUseHarmony>true</RwtUseHarmony>
     <RwtUseSpine>true</RwtUseSpine>
     <RwtUseUnityImGui>true</RwtUseUnityImGui>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == '1.4' Or '$(Configuration)' == '1.5'">
+    <DefineConstants>CARAVAN_READINESS_HAS_BIOTECH;CARAVAN_READINESS_HAS_EXIT_SPOT;CARAVAN_READINESS_HAS_ROPING;CARAVAN_READINESS_HAS_COMMAND_ORDER;CARAVAN_READINESS_HAS_INGREDIENTS;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == '1.1' Or '$(Configuration)' == '1.2'">
+    <DefineConstants>CARAVAN_READINESS_LEGACY_LAYOUT;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == '1.3'">
+    <DefineConstants>CARAVAN_READINESS_HAS_INGREDIENTS;TRACE</DefineConstants>
   </PropertyGroup>
 </Project>

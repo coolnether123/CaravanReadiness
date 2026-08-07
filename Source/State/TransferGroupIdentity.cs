@@ -83,6 +83,9 @@ namespace CaravanReadiness.State
             StringBuilder signature,
             Thing thing)
         {
+#if !CARAVAN_READINESS_HAS_INGREDIENTS
+            return;
+#else
             CompIngredients ingredients = thing?.TryGetComp<CompIngredients>();
             if (ingredients == null ||
                 !ingredients.Props.performMergeCompatibilityChecks)
@@ -93,16 +96,20 @@ namespace CaravanReadiness.State
             IEnumerable<string> tags = ingredients.MergeCompatibilityTags
                 .OrderBy(tag => tag, System.StringComparer.Ordinal);
             Append(signature, "ingredients=" + string.Join(",", tags));
+#if CARAVAN_READINESS_HAS_BIOTECH
             if (ingredients.Props.splitTransferableFoodKind)
             {
                 Append(signature, "food=" + (int)FoodUtility.GetFoodKind(thing));
             }
+#endif
+#endif
         }
 
         private static void AppendGeneIdentity(
             StringBuilder signature,
             Thing thing)
         {
+#if CARAVAN_READINESS_HAS_BIOTECH
             GeneSet genes = null;
             if (thing is Genepack genepack)
             {
@@ -122,6 +129,7 @@ namespace CaravanReadiness.State
                 genes.GenesListForReading
                     .Select(gene => gene.defName)
                     .OrderBy(name => name, System.StringComparer.Ordinal)));
+#endif
         }
 
         private static void Append(StringBuilder target, string value)

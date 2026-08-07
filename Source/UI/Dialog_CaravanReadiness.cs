@@ -535,7 +535,7 @@ namespace CaravanReadiness.UI
                 rect.y + ((rect.height - 18f) / 2f),
                 18f,
                 18f);
-            if (Widgets.ButtonImage(clear, TexButton.CloseXSmall))
+            if (Widgets.ButtonText(clear, "X"))
             {
                 searchText = string.Empty;
                 filterDirty = true;
@@ -964,7 +964,13 @@ namespace CaravanReadiness.UI
         {
             Text.Anchor = TextAnchor.MiddleCenter;
             GUI.color = color;
-            Widgets.Label(rect.ContractedBy(CellPadding, 0f), text);
+            Widgets.Label(
+#if CARAVAN_READINESS_LEGACY_LAYOUT
+                rect.ContractedBy(CellPadding),
+#else
+                rect.ContractedBy(CellPadding, 0f),
+#endif
+                text);
             GUI.color = Color.white;
             Text.Anchor = TextAnchor.UpperLeft;
         }

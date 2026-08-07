@@ -370,9 +370,13 @@ namespace CaravanReadiness.State
             // Vanilla changes the meaningful destination once the formation
             // enters its leave toil; proximity to the packing spot is no longer
             // evidence that a member is ready at that stage.
-            IntVec3 target = lord.CurLordToil is LordToil_PrepareCaravan_Leave
-                ? job.ExitSpot
-                : snapshot.MeetingPoint;
+            IntVec3 target = snapshot.MeetingPoint;
+#if CARAVAN_READINESS_HAS_EXIT_SPOT
+            if (lord.CurLordToil is LordToil_PrepareCaravan_Leave)
+            {
+                target = job.ExitSpot;
+            }
+#endif
 
             foreach (Pawn pawn in lord.ownedPawns
                 .Concat(job.downedPawns ?? Enumerable.Empty<Pawn>())
@@ -444,6 +448,7 @@ namespace CaravanReadiness.State
                 ready = false;
                 blocking = false;
             }
+#if CARAVAN_READINESS_HAS_ROPING
             else if (pawn.RaceProps.Animal &&
                      AnimalPenUtility.NeedsToBeManagedByRope(pawn) &&
                      !pawn.roping.IsRoped)
@@ -453,6 +458,7 @@ namespace CaravanReadiness.State
                 ready = false;
                 blocking = true;
             }
+#endif
             else
             {
                 status = "CR_MemberReady".Translate();
