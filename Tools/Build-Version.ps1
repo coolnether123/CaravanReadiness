@@ -10,7 +10,7 @@ $buildScript = Join-Path ([System.IO.Path]::GetFullPath($toolingRoot)) 'tools\In
 $resultPath = Join-Path $outputRoot 'build-result.json'
 & powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File $buildScript `
     -Project (Join-Path $repository 'Source\Mod.csproj') -Configuration $Configuration -Version $Configuration `
-    -OutputRoot $outputRoot -Engine MSBuild -Dependency @('harmony', 'spine') -ResultPath $resultPath | Out-Null
+    -OutputRoot $outputRoot -Engine MSBuild -Dependency 'harmony,spine' -ResultPath $resultPath | Out-Null
 if (-not (Test-Path -LiteralPath $resultPath -PathType Leaf)) { throw "No build result was returned for $Configuration." }
 $result = Get-Content -Raw -LiteralPath $resultPath | ConvertFrom-Json
 if (-not [bool]$result.Succeeded) { throw "RimWorld $Configuration build failed with exit code $($result.ExitCode)." }
