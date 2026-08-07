@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "caravan-readiness",
+  "strategy": "support-branches",
+  "allowRealExecution": true,
+  "sourceBranch": "main",
+  "sourceVersion": "1.6",
+  "supportVersions": ["1.5", "1.4", "1.3", "1.2", "1.1"],
+  "payloadRoots": [
+    "Assemblies",
+    "About/About.xml",
+    "LoadFolders.xml",
+    "Tools",
+    "1.6/Assemblies",
+    "1.5/Assemblies",
+    "1.4/Assemblies",
+    "1.3/Assemblies",
+    "1.2/Assemblies",
+    "1.1/Assemblies"
+  ],
+  "copyBackPaths": ["1.5/Assemblies", "1.4/Assemblies", "1.3/Assemblies", "1.2/Assemblies", "1.1/Assemblies"],
+  "build": {
+    "project": "Tools/Build-Version.ps1",
+    "configurationTemplate": "{version}",
+    "expectedAssembly": "CaravanReadiness.dll"
+  },
+  "hooks": [
+    {"name": "caravan-readiness-branch-metadata", "path": "Tools/SupportCascadeHooks.ps1", "phase": "after-merge", "versions": ["*"]},
+    {"name": "caravan-readiness-root-payload", "path": "Tools/SupportCascadeHooks.ps1", "phase": "before-stage", "versions": ["*"]}
+  ],
+  "additionalActions": [],
+  "copyBack": true,
+  "push": false,
+  "restoreSource": true
+}
