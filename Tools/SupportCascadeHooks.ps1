@@ -19,7 +19,7 @@ $xml = @"
   <description>Live caravan formation readiness report for RimWorld $Version. Requires Harmony and SpineLib.</description>
 </ModMetaData>
 "@
-$loadFolders = "<?xml version=`"1.0`" encoding=`"utf-8`"?><loadFolders><v$Version><li>/</li></v$Version></loadFolders>"
+$loadFolders = "<?xml version=`"1.0`" encoding=`"utf-8`"?><loadFolders><v$Version><li>/</li><li>$Version</li></v$Version></loadFolders>"
 if ($Phase -eq 'after-merge') {
     [System.IO.File]::WriteAllText($about, $xml)
     [System.IO.File]::WriteAllText((Join-Path $repository 'LoadFolders.xml'), $loadFolders)
