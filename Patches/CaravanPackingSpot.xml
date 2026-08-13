@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Patch>
-  <Operation Class="PatchOperationAdd">
+  <Operation Class="PatchOperationConditional">
     <xpath>Defs/ThingDef[defName="CaravanPackingSpot"]/comps</xpath>
-    <value>
-      <li Class="CaravanReadiness.UI.CompProperties_CaravanReadiness" />
-    </value>
+    <match Class="PatchOperationAdd">
+      <xpath>Defs/ThingDef[defName="CaravanPackingSpot"]/comps</xpath>
+      <value>
+        <li Class="CaravanReadiness.UI.CompProperties_CaravanReadiness" />
+      </value>
+    </match>
+    <nomatch Class="PatchOperationSequence">
+      <operations>
+        <li Class="PatchOperationAdd">
+          <xpath>Defs/ThingDef[defName="CaravanPackingSpot"]</xpath>
+          <value>
+            <comps>
+              <li Class="CaravanReadiness.UI.CompProperties_CaravanReadiness" />
+            </comps>
+          </value>
+        </li>
+      </operations>
+    </nomatch>
   </Operation>
 </Patch>
-
