@@ -1,12 +1,12 @@
 # Caravan Readiness
 
-Caravan Readiness adds an observational readiness report to RimWorld's existing
-caravan hitching spot. It does not replace caravan formation, create haul jobs,
-change reservations, or force departure.
+Caravan Readiness adds a live readiness report to RimWorld's existing caravan
+hitching spot. It observes the vanilla formation process without creating haul
+jobs, changing reservations, or forcing departure.
 
-When a vanilla caravan is forming, select its hitching spot and open **Caravan
-readiness**. A compact summary and progress bar stay readable as the caravan
-fills, while the detailed report groups cargo, people, animals, and problems.
+While a vanilla caravan is forming, select its hitching spot and open **Caravan
+readiness**. The summary and progress bar track loading progress. The detailed
+report groups cargo, people, animals, and problems.
 Cargo rows reconcile requested, loaded, carried, reserved, waiting,
 inaccessible, blocked, and unavailable quantities. Rows with a known target can
 be clicked to jump to the relevant pawn or item.
@@ -15,7 +15,7 @@ be clicked to jump to the relevant pawn or item.
 
 - RimWorld 1.6
 - [Harmony](https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077)
-- [SpineLib](https://steamcommunity.com/sharedfiles/filedetails/?id=3778463813) — the shared runtime used by
+- [SpineLib](https://steamcommunity.com/sharedfiles/filedetails/?id=3778463813), the shared runtime used by
   CoolNether123 mods
 
 ## Installation

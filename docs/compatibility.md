@@ -2,11 +2,11 @@
 
 ## Investigated
 
-- **Caravan Formation Improvements**: closest maintained neighbor. It changes formation/exit/arrival spot handling and pause behavior. Caravan Readiness remains observational and must be pair-tested before a compatibility claim.
-- **Easy Caravan and Go!**: changes formation convenience, movable spots, and forced departure. No compatibility claim without a pair test.
-- **Caravan Lag Eliminator**: targets caravan-dialog food calculations, not forming-lord readiness. No direct overlap identified.
-- **Billy's Improved Caravan Formation** and **Change Caravan Loadout**: older job/loadout-oriented projects; consulted for behavioral scope only.
-- Vanilla shelves/storage are irrelevant to this mod. Vehicle Framework and transport pods use different formation state and are intentionally not folded into vanilla caravan reports.
+- **Caravan Formation Improvements** is the closest maintained neighbor. It changes formation, exit and arrival spot handling, and pause behavior. Caravan Readiness remains observational and must be pair-tested before a compatibility claim.
+- **Easy Caravan and Go!** changes formation convenience, movable spots, and forced departure. No compatibility claim has been made without a pair test.
+- **Caravan Lag Eliminator** targets caravan-dialog food calculations rather than forming-lord readiness. No direct overlap was found.
+- **Billy's Improved Caravan Formation** and **Change Caravan Loadout** are older job and loadout projects that were consulted only to define behavioral scope.
+- Vanilla shelves and storage do not affect this mod. Vehicle Framework and transport pods use different formation state, so Caravan Readiness does not include them in vanilla caravan reports.
 
 ## Expected behavior
 

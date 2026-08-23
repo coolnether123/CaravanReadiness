@@ -9,7 +9,7 @@
   <CR_PhaseSummary>Current phase: {0}</CR_PhaseSummary>
   <CR_ProgressBarLabel>{0} / {1} loaded</CR_ProgressBarLabel>
   <CR_ProgressNoCargo>No cargo requested</CR_ProgressNoCargo>
-  <CR_ProgressSummary>{0} / {1} loaded  -  {2} being carried  -  {3} reserved</CR_ProgressSummary>
+  <CR_ProgressSummary>{0} / {1} loaded, {2} being carried, {3} reserved</CR_ProgressSummary>
   <CR_EmptyFormation>No caravan is currently forming at this hitching spot.</CR_EmptyFormation>
   <CR_TabCargo>Cargo</CR_TabCargo>
   <CR_TabPeople>People</CR_TabPeople>
@@ -44,7 +44,7 @@ Click to jump to a relevant item or pawn.</CR_CargoTooltip>
   <CR_CargoFlagBurning>Burning: yes</CR_CargoFlagBurning>
   <CR_CargoFlagForbidden>Forbidden: yes (informational)</CR_CargoFlagForbidden>
   <CR_ProblemUnavailable>{0}: unavailable</CR_ProblemUnavailable>
-  <CR_ProblemUnavailableDetail>{0} requested unit(s) have no currently usable source.</CR_ProblemUnavailableDetail>
+  <CR_ProblemUnavailableDetail>No usable source is available for {0} requested unit(s).</CR_ProblemUnavailableDetail>
   <CR_ProblemInaccessible>{0}: inaccessible</CR_ProblemInaccessible>
   <CR_ProblemInaccessibleDetail>{0} requested unit(s) cannot be reached by an available colonist.</CR_ProblemInaccessibleDetail>
   <CR_ProblemReserved>{0}: reserved or blocked</CR_ProblemReserved>
@@ -52,7 +52,7 @@ Click to jump to a relevant item or pawn.</CR_CargoTooltip>
   <CR_ProblemBurning>{0}: burning</CR_ProblemBurning>
   <CR_ProblemBurningDetail>A candidate stack is on fire and may be lost before it is loaded.</CR_ProblemBurningDetail>
   <CR_ProblemForbidden>{0}: forbidden</CR_ProblemForbidden>
-  <CR_ProblemForbiddenDetail>A candidate stack is forbidden. Vanilla caravan gathering may override forbidding; this is informational.</CR_ProblemForbiddenDetail>
+  <CR_ProblemForbiddenDetail>A candidate stack is forbidden. Vanilla caravan gathering may still use it, so this is informational.</CR_ProblemForbiddenDetail>
   <CR_ProblemCapacity>Insufficient carrying capacity</CR_ProblemCapacity>
   <CR_ProblemCapacityDetail>The manifest exceeds current capacity by {0}.</CR_ProblemCapacityDetail>
   <CR_MemberDowned>Downed</CR_MemberDowned>
