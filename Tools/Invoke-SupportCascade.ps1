@@ -2,7 +2,7 @@ param([string]$OutputPath, [string]$PlanPath, [switch]$Execute, [string]$Journal
 $ErrorActionPreference = 'Stop'
 $repository = [System.IO.Path]::GetFullPath((Split-Path -Parent $PSScriptRoot))
 $toolingRoot = [Environment]::GetEnvironmentVariable('RWT_CASCADE_TOOLING_ROOT')
-if ([string]::IsNullOrWhiteSpace($toolingRoot)) { $toolingRoot = 'A:\Dev\RimWorld\Worktrees\RimWorld-Tooling\phase-a' }
+if ([string]::IsNullOrWhiteSpace($toolingRoot)) { $toolingRoot = 'H:\Dev\RimWorld\Worktrees\RimWorld-Tooling\phase-a' }
 $arguments = @('-Manifest', (Join-Path $repository 'Tools\CascadeManifest.json'), '-Repository', $repository)
 if ($OutputPath) { $arguments += @('-OutputPath', $OutputPath) }
 if ($PlanPath) { $arguments += @('-PlanPath', $PlanPath) }
