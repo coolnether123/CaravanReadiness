@@ -9,5 +9,5 @@ vanilla command placement is unchanged.
 
 Use `About`, `Tools\CascadeManifest.json`, README, project
 files, and `Tests` as the local build/support/verification authorities. Follow
-`A:\Dev\RimWorld\AGENTS.md` for shared build and runtime work, then verify gizmo
+`H:\Dev\RimWorld\AGENTS.md` for shared build and runtime work, then verify gizmo
 ordering in game.
